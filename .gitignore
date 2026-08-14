@@ -35,6 +35,10 @@ ENV/
 # Environment variables
 .env
 
+# Next.js landing (Vercel)
+node_modules/
+.next/
+
 # Output files
 out/
 *.log
@@ -42,6 +46,8 @@ out/
 *.json
 !deploy/**/*.json
 !package.json
+!package-lock.json
+!tsconfig.json
 !vercel.json
 
 # Test coverage

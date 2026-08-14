@@ -57,7 +57,8 @@ python -m src.tools.cycle_rebalance
 ## Layout
 
 ```
-src/web/          FastAPI + HTML/JS
+app/              Next.js marketing landing (Vercel)
+src/web/          FastAPI + HTML/JS (local dashboard)
 src/portfolio/    Action plan, history, season, rebalance, paper
 src/tools/        CLI helpers (cycle_rebalance dry-run)
 src/ibkr/         IBKR snapshot, Flex, rebalance / hybrid hints
@@ -65,6 +66,19 @@ src/news_dip_bot.py  Background news+dip / paper loop for Crypto UI
 configs/          news_dip.yaml (incl. cycle_rebalance)
 out/              Runtime state (ledgers, season_cache, snapshots) — gitignored
 ```
+
+## Vercel (public landing)
+
+The public site is the Next.js app at the **repository root** (`app/`, `package.json`).
+
+1. Import `voyager556321/cryptopilot` in Vercel.
+2. **Root Directory must be empty** (not `deploy/vercel`).
+3. Framework: Next.js.
+4. Production URL: Promote the latest `master` deployment to Production, or open `https://cryptopilot-one.vercel.app` after a Production deploy.
+
+Env (optional waitlist): `WAITLIST_WEBHOOK_URL`.
+
+Do **not** deploy the FastAPI dashboard to Vercel.
 
 ## Tests
 
