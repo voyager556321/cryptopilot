@@ -79,7 +79,23 @@ The public site is the Next.js app at the **repository root** (`app/`, `package.
    - Build Command: `next build` (або дефолт Next.js)
 4. Production: latest Ready deploy → **Promote to Production**.
 
-Env (optional waitlist): `WAITLIST_WEBHOOK_URL`.
+### Waitlist notifications
+
+The form does **not** email you by itself. Set env vars in Vercel → Settings → Environment Variables (Production + Preview), then Redeploy.
+
+**Telegram (найпростіше):**
+
+1. Telegram → [@BotFather](https://t.me/BotFather) → `/newbot` → скопіюй token.
+2. Напиши боту будь-яке повідомлення.
+3. Відкрий `https://api.telegram.org/bot<TOKEN>/getUpdates` — візьми `chat.id`.
+4. У Vercel додай:
+
+```
+WAITLIST_TELEGRAM_BOT_TOKEN=123456:ABC...
+WAITLIST_TELEGRAM_CHAT_ID=123456789
+```
+
+Альтернативи: `WAITLIST_WEBHOOK_URL` (Discord Incoming Webhook) або `RESEND_API_KEY` + `WAITLIST_NOTIFY_EMAIL`.
 
 Do **not** deploy the FastAPI dashboard to Vercel.
 
