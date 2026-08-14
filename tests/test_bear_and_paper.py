@@ -53,7 +53,10 @@ def test_bear_alert_short_when_not_already_dumped():
         )
     }
     signals = strategy.evaluate([item], markets)
-    assert any(s.action == "ALERT_SHORT" and s.symbol == "BTC" for s in signals)
+    shorts = [s for s in signals if s.action == "ALERT_SHORT" and s.symbol == "BTC"]
+    assert shorts
+    assert shorts[0].suggested_size_usdt == 0.0
+    assert shorts[0].side == "flat"
 
 
 def test_bear_watch_when_already_down():
@@ -81,9 +84,9 @@ def test_bear_watch_when_already_down():
     assert any(s.action == "WATCH" for s in signals)
 
 
-def test_paper_open_and_mark(tmp_path):
+def test_paper_refuses_shorts_and_usdt(tmp_path):
     journal = PaperJournal(tmp_path, bank_usdt=5000, max_open=5)
-    opened = journal.open_from_news_alert({
+    shorted = journal.open_from_news_alert({
         "action": "ALERT_SHORT",
         "symbol": "BTC",
         "price": 100000,
@@ -94,7 +97,42 @@ def test_paper_open_and_mark(tmp_path):
         "strategy": "news_bear",
         "news_title": "sells btc",
     })
+    assert shorted is None
+
+    sold = journal.open_from_rebalance({
+        "action": "SELL",
+        "asset": "USDT",
+        "amount_usdt": 114,
+        "price": 1.0,
+        "note": "overweight",
+    })
+    assert sold is None
+
+    opened = journal.open_from_news_alert({
+        "action": "ALERT",
+        "symbol": "ETH",
+        "price": 1800,
+        "suggested_size_usdt": 100,
+        "take_profit_pct": 0.04,
+        "stop_loss_pct": 0.025,
+        "time_stop_hours": 24,
+        "strategy": "news_dip",
+        "news_title": "dip",
+    })
     assert opened is not None
-    summary = journal.mark_to_market({"BTC": 98000})  # short profits
+    summary = journal.mark_to_market({"ETH": 1850})
     assert summary["open_count"] == 1
     assert summary["open"][0]["unrealized_pnl_usdt"] > 0
+
+
+def test_drop_leftover_paper_shorts(tmp_path):
+    journal = PaperJournal(tmp_path, bank_usdt=5000, max_open=5)
+    journal._data["open"] = [
+        {"symbol": "BTC", "side": "short", "strategy": "news_bear", "size_usdt": 100},
+        {"symbol": "ETH", "side": "long", "strategy": "news_dip", "size_usdt": 100},
+        {"symbol": "USDT", "side": "long", "strategy": "rebalance", "size_usdt": 20},
+    ]
+    dropped = journal.drop_non_spot_opens()
+    assert dropped == 2
+    assert len(journal._data["open"]) == 1
+    assert journal._data["open"][0]["symbol"] == "ETH"

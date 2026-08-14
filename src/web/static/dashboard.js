@@ -69,9 +69,8 @@ function renderConfig(cfg) {
     ["Exchange", cfg.exchange],
     ["API key", cfg.api_key],
     ["Strategy mode", cfg.strategy_mode],
-    ["Auto paper", String(cfg.auto_paper)],
-    ["Paper bank", cfg.paper_bank_usdt],
-    ["Bear alerts", String(cfg.enable_bear_alerts)],
+    ["Auto paper", "off (spot journal, not orders)"],
+    ["Bear news", "caution only — no shorts"],
     ["Symbols", (cfg.symbols || []).join(", ")],
     ["Bank USDT", cfg.bank_usdt],
     ["Risk / alert", cfg.risk_per_alert_pct != null ? pct(cfg.risk_per_alert_pct) : "—"],
@@ -141,6 +140,20 @@ function renderMarkets(markets) {
     .join("");
 }
 
+function actionLabel(action) {
+  if (action === "ALERT_SHORT") return "CAUTION";
+  if (action === "ALERT") return "DIP IDEA";
+  if (action === "WATCH") return "WATCH";
+  return action || "—";
+}
+
+function alertNote(s) {
+  if (s.action === "ALERT_SHORT") return "Optional futures — see exit card";
+  if (s.action === "WATCH") return "Likely priced in";
+  if (s.suggested_size_usdt) return `Idea size ${usd(s.suggested_size_usdt)}`;
+  return "—";
+}
+
 function renderAlerts(signals) {
   const body = document.getElementById("alerts-body");
   const alerts = (signals || []).filter((s) =>
@@ -149,7 +162,7 @@ function renderAlerts(signals) {
   document.getElementById("stat-alerts").textContent = String(alerts.length);
 
   if (!alerts.length) {
-    body.innerHTML = `<tr><td colspan="7" style="color:var(--muted)">No alerts yet — bull dip, bear sell, or WATCH</td></tr>`;
+    body.innerHTML = `<tr><td colspan="7" style="color:var(--muted)">No news cautions yet</td></tr>`;
     return;
   }
 
@@ -158,10 +171,10 @@ function renderAlerts(signals) {
       (s) => `
     <tr>
       <td>${(s.timestamp || "").replace("T", " ").slice(0, 19)}</td>
-      <td><strong>${s.symbol}</strong> <span class="badge ${s.action}">${s.action}</span></td>
+      <td><strong>${s.symbol}</strong> <span class="badge ${s.action}">${actionLabel(s.action)}</span></td>
       <td>${usd(s.price)}</td>
       <td>${pct(s.dip_pct)}</td>
-      <td>${usd(s.suggested_size_usdt)}</td>
+      <td>${alertNote(s)}</td>
       <td><a href="${s.news_url}" target="_blank" rel="noopener">${s.news_title || "link"}</a></td>
       <td><span class="badge ${s.sentiment || "unclear"}">${s.sentiment || "—"}</span></td>
     </tr>`
@@ -197,7 +210,7 @@ function renderPaper(paper) {
 
   const rows = [...(paper.open || []), ...(paper.closed || []).slice(0, 30)];
   if (!rows.length) {
-    body.innerHTML = `<tr><td colspan="9" style="color:var(--muted)">No paper trades yet — after Sync they appear on ALERT / rebalance drift</td></tr>`;
+    body.innerHTML = `<tr><td colspan="9" style="color:var(--muted)">Sandbox empty — not the live wallet. Auto-paper is off.</td></tr>`;
     return;
   }
 
@@ -242,7 +255,7 @@ function renderSignals(signals) {
     <tr>
       <td>${(s.timestamp || "").replace("T", " ").slice(0, 19)}</td>
       <td><strong>${s.symbol}</strong></td>
-      <td><span class="badge ${s.action}">${s.action}</span></td>
+      <td><span class="badge ${s.action}">${actionLabel(s.action)}</span></td>
       <td>${s.skip_reason || "—"}</td>
       <td>${pct(s.dip_pct)}</td>
       <td>${Number(s.volume_ratio || 0).toFixed(2)}</td>
@@ -352,6 +365,9 @@ function renderOverview(overview, portfolio) {
       checklist: [],
       actions: [],
     });
+    renderMarketCycle(overview && overview.market_cycle ? overview.market_cycle : {});
+    renderMarketSeason(overview && overview.market_season ? overview.market_season : {});
+    renderShortPlaybook(overview && overview.short_playbook ? overview.short_playbook : {});
     renderLockedPeriods(overview && overview.profit_lock ? overview.profit_lock : {});
     return;
   }
@@ -380,7 +396,9 @@ function renderOverview(overview, portfolio) {
   meta.className = "status";
 
   renderMarketCycle(overview.market_cycle || {});
+  renderMarketSeason(overview.market_season || {});
   renderActionPlan(overview.action_plan || {});
+  renderShortPlaybook(overview.short_playbook || {});
   renderLockedPeriods(overview.profit_lock || {});
   renderRebalance(overview.rebalance || {});
   renderHoldings(portfolio, overview.rebalance || {});
@@ -440,6 +458,32 @@ function renderMarketCycle(cycle) {
     levelsEl.textContent = "";
   }
   note.textContent = [cycle.macro_context, cycle.note].filter(Boolean).join(" ");
+}
+
+function renderMarketSeason(season) {
+  const card = document.getElementById("season-card");
+  const badge = document.getElementById("season-mode-badge");
+  const headline = document.getElementById("season-headline");
+  const checklist = document.getElementById("season-checklist");
+  const note = document.getElementById("season-note");
+  if (!card || !season) return;
+
+  const phase = season.phase || "neutral";
+  card.dataset.mode = phase;
+  badge.textContent = phase;
+  badge.className = `badge mode-${phase}`;
+  headline.textContent = season.headline || "—";
+  const items = season.checklist || [];
+  checklist.innerHTML = items.length
+    ? items.map((t) => `<li>${t}</li>`).join("")
+    : "<li>—</li>";
+  const bits = [
+    season.btc_dominance != null ? `BTC.D ${season.btc_dominance}%` : null,
+    season.btc_d_trend ? `trend ${season.btc_d_trend}` : null,
+    season.alt_season_index != null ? `alt-index ${season.alt_season_index}` : null,
+    season.note || null,
+  ].filter(Boolean);
+  note.textContent = bits.join(" · ");
 }
 
 function renderActionPlan(plan) {
@@ -503,6 +547,55 @@ function renderActionPlan(plan) {
           (remain > 0 && plan.mode === "profit_lock" ? ` · still $${Number(remain).toFixed(2)}` : " · done")
         : `Locked today: $${Number(already).toFixed(2)}`;
   }
+}
+
+function renderShortPlaybook(book) {
+  window.__lastShortPlaybook = book || {};
+  const card = document.getElementById("short-playbook-card");
+  const badge = document.getElementById("short-mode-badge");
+  const headline = document.getElementById("short-headline");
+  const checklist = document.getElementById("short-checklist");
+  const rulesBody = document.getElementById("short-rules-body");
+  const rulesWrap = document.getElementById("short-rules-wrap");
+  const note = document.getElementById("short-note");
+  const trackBtn = document.getElementById("short-track-btn");
+  const closeBtn = document.getElementById("short-close-btn");
+  if (!card) return;
+
+  const mode = book.mode || "idle";
+  card.dataset.mode = mode;
+  badge.textContent = mode === "exit" ? "EXIT NOW" : mode;
+  badge.className = `badge mode-${mode}`;
+  headline.textContent = book.headline || "No short today. The spot plan above is the default.";
+
+  const items = book.checklist || [];
+  checklist.innerHTML = items.length
+    ? items.map((t) => `<li>${t}</li>`).join("")
+    : "";
+
+  const rules = book.rules || [];
+  if (!rules.length) {
+    rulesWrap.style.display = "none";
+    rulesBody.innerHTML = "";
+  } else {
+    rulesWrap.style.display = "";
+    rulesBody.innerHTML = rules
+      .map((r) => {
+        const hit = String(r.state || "").startsWith("HIT");
+        return `
+      <tr>
+        <td><strong>${r.name}</strong></td>
+        <td>${r.trigger || "—"}</td>
+        <td>${r.why || "—"}</td>
+        <td class="${hit ? "neg" : ""}">${r.state || "—"}</td>
+      </tr>`;
+      })
+      .join("");
+  }
+
+  note.textContent = book.note || "";
+  if (trackBtn) trackBtn.style.display = mode === "idea" ? "" : "none";
+  if (closeBtn) closeBtn.style.display = book.has_position ? "" : "none";
 }
 
 document.getElementById("lock-detect-btn")?.addEventListener("click", async () => {
@@ -570,7 +663,23 @@ document.getElementById("lock-reset-btn")?.addEventListener("click", async () =>
 function renderRebalance(rebalance) {
   const policy = document.getElementById("rebalance-policy");
   const body = document.getElementById("rebalance-body");
+  const banner = document.getElementById("rebalance-phase-banner");
   if (policy && rebalance.policy) policy.textContent = rebalance.policy;
+  if (banner) {
+    if (rebalance.phase_changed) {
+      banner.style.display = "";
+      banner.className = "status warn-banner";
+      banner.textContent =
+        `Phase just changed` +
+        (rebalance.season && rebalance.season.previous_phase
+          ? ` (${rebalance.season.previous_phase} → ${rebalance.phase})`
+          : "") +
+        `. Confirm over a day or two before acting.`;
+    } else {
+      banner.style.display = "none";
+      banner.textContent = "";
+    }
+  }
 
   const rows = [...(rebalance.actionable || []), ...(rebalance.minor || [])];
   if (!rows.length) {
@@ -714,7 +823,7 @@ document.getElementById("sync-btn").addEventListener("click", async () => {
 document.getElementById("reload-btn").addEventListener("click", () => refresh());
 
 document.getElementById("reset-paper-btn").addEventListener("click", async () => {
-  if (!confirm("Reset local demo paper account? Open/closed virtual trades will be wiped.")) return;
+  if (!confirm("Reset sandbox journal? Virtual trades only — Binance is untouched.")) return;
   const status = document.getElementById("last-run");
   try {
     const res = await fetchJson("/api/paper/reset", { method: "POST" });
@@ -748,3 +857,51 @@ document.querySelectorAll(".mode-btn").forEach((btn) => {
 
 refresh();
 setInterval(refresh, 30000);
+
+document.getElementById("short-track-btn")?.addEventListener("click", async () => {
+  const book = window.__lastShortPlaybook || {};
+  const idea = book.idea;
+  if (!idea) {
+    alert("No short idea to track.");
+    return;
+  }
+  const ok = confirm(
+    `Track ${idea.symbol} short at ${idea.entry_price} · $${idea.size_usdt}?\n` +
+      `This does not send a Binance order. Place the stop on the exchange first, or skip.`
+  );
+  if (!ok) return;
+  try {
+    await fetchJson("/api/short-watch", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        symbol: idea.symbol,
+        entry_price: idea.entry_price,
+        size_usdt: idea.size_usdt,
+        take_profit_pct: idea.take_profit_pct,
+        stop_loss_pct: idea.stop_loss_pct,
+        time_stop_hours: idea.time_stop_hours,
+        news_title: idea.news_title,
+      }),
+    });
+    await refresh();
+  } catch (err) {
+    alert(`Could not track: ${err.message}`);
+  }
+});
+
+document.getElementById("short-close-btn")?.addEventListener("click", async () => {
+  const pos = (window.__lastShortPlaybook || {}).position;
+  if (!pos) return;
+  if (!confirm("Mark this short as closed? Binance is not touched.")) return;
+  try {
+    await fetchJson("/api/short-watch/close", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: pos.id, reason: pos.exit_reason || "manual" }),
+    });
+    await refresh();
+  } catch (err) {
+    alert(`Could not close: ${err.message}`);
+  }
+});

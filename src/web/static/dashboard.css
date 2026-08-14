@@ -343,7 +343,7 @@ a:hover { text-decoration: underline; }
   line-height: 1.35;
 }
 
-.badge.ALERT_SHORT { background: rgba(248, 113, 113, 0.18); color: var(--red); }
+.badge.ALERT_SHORT { background: rgba(251, 191, 36, 0.18); color: var(--warn); }
 .badge.WATCH { background: rgba(251, 191, 36, 0.15); color: var(--warn); }
 .badge.long { background: rgba(52, 211, 153, 0.15); color: var(--green); }
 .badge.short { background: rgba(248, 113, 113, 0.15); color: var(--red); }
@@ -381,7 +381,30 @@ a:hover { text-decoration: underline; }
 .action-plan-card[data-mode="caution"] { border-left-color: var(--warn); }
 .action-plan-card[data-mode="risk_off"] { border-left-color: var(--red); }
 .action-plan-card[data-mode="bounce_watch"] { border-left-color: var(--warn); }
-.action-plan-card[data-mode="risk_on"] { border-left-color: var(--green); }
+.action-plan-card[data-mode="exit"] { border-left-color: var(--red); }
+.action-plan-card[data-mode="idea"] { border-left-color: var(--warn); }
+.action-plan-card[data-mode="skip"] { border-left-color: var(--warn); }
+.action-plan-card[data-mode="idle"] { border-left-color: #3a455c; }
+.action-plan-card[data-mode="btc_season"] { border-left-color: var(--accent); }
+.action-plan-card[data-mode="alt_season"] { border-left-color: var(--warn); }
+.action-plan-card[data-mode="neutral"] { border-left-color: #3a455c; }
+
+.badge.mode-exit { background: rgba(248, 113, 113, 0.18); color: var(--red); }
+.badge.mode-idea { background: rgba(251, 191, 36, 0.15); color: var(--warn); }
+.badge.mode-skip { background: rgba(251, 191, 36, 0.15); color: var(--warn); }
+.badge.mode-idle { background: #2a3144; color: var(--muted); }
+.badge.mode-btc_season { background: rgba(125, 211, 252, 0.18); color: #7dd3fc; }
+.badge.mode-alt_season { background: rgba(251, 191, 36, 0.18); color: var(--warn); }
+.badge.mode-neutral { background: #2a3144; color: var(--muted); }
+
+.warn-banner {
+  color: var(--warn);
+  margin: 0 0 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  border-radius: 6px;
+  background: rgba(251, 191, 36, 0.08);
+}
 
 .action-plan-head {
   display: flex;

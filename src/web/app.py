@@ -14,14 +14,16 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from src.config import load_config, Settings
+from src.config import load_config, Settings, CycleRebalanceConfig
 from src.data.market import fetch_portfolio_snapshot, fetch_spot_sells_usdt_range
 from src.news_dip_bot import NewsDipBot
 from src.portfolio.history import PortfolioHistory
 from src.portfolio.rebalance_hints import rebalance_from_portfolio
 from src.portfolio.action_plan import build_action_plan
 from src.portfolio.market_cycle import assess_market_cycle
+from src.portfolio.season import assess_market_season
 from src.portfolio.profit_lock_ledger import ProfitLockLedger
+from src.portfolio.short_playbook import ShortWatch, build_short_playbook
 from src.ibkr.portfolio import IbkrPortfolioStore
 from src.ibkr.news_alerts import IbkrNewsAlerts, get_cached_or_run as ibkr_news_cached
 from src.ibkr.rebalance import (
@@ -44,6 +46,7 @@ _portfolio_synced_at: Optional[str] = None
 _history: Optional[PortfolioHistory] = None
 _ibkr_store: Optional[IbkrPortfolioStore] = None
 _lock_ledger: Optional[ProfitLockLedger] = None
+_short_watch: Optional[ShortWatch] = None
 _ibkr_news: Optional[IbkrNewsAlerts] = None
 _rs_closes_cache: dict = {"at": 0.0, "data": {}}
 
@@ -109,6 +112,36 @@ def _get_lock_ledger() -> ProfitLockLedger:
     if _lock_ledger is None or _lock_ledger.output_dir != Path(out):
         _lock_ledger = ProfitLockLedger(Path(out))
     return _lock_ledger
+
+
+def _get_short_watch() -> ShortWatch:
+    global _short_watch
+    out = (_config.output_dir if _config else Path("out"))
+    if _short_watch is None or _short_watch.output_dir != Path(out):
+        _short_watch = ShortWatch(Path(out))
+    return _short_watch
+
+
+def _mark_prices(portfolio: dict) -> dict:
+    prices: dict[str, float] = {}
+    for h in portfolio.get("holdings") or []:
+        sym = (h.get("symbol") or "").upper()
+        px = h.get("price_usdt")
+        if sym and px:
+            prices[sym] = float(px)
+    if _bot is not None:
+        markets = (_bot.journal.state or {}).get("markets") or {}
+        if isinstance(markets, dict):
+            for sym, m in markets.items():
+                if isinstance(m, dict) and m.get("price") and sym not in prices:
+                    prices[str(sym).upper()] = float(m["price"])
+    return prices
+
+
+def _news_alerts() -> list:
+    if _bot is None:
+        return []
+    return list((_bot.journal.state or {}).get("alerts") or [])
 
 
 def _build_ibkr_overview(snapshot: dict) -> dict:
@@ -289,22 +322,45 @@ def _build_overview(portfolio: dict) -> dict:
     hist = _get_history().overview(
         current_total=portfolio.get("total_usdt") if portfolio.get("available") else None
     )
-    rebalance = (
-        rebalance_from_portfolio(portfolio)
-        if portfolio.get("available")
-        else {
+    out_dir = Path(_config.output_dir) if _config else Path("out")
+    cr = (_config.cycle_rebalance if _config else CycleRebalanceConfig())
+    season = assess_market_season(
+        cr,
+        output_dir=out_dir,
+        fetch=bool(cr.enabled),
+    )
+    if portfolio.get("available"):
+        rebalance = rebalance_from_portfolio(
+            portfolio,
+            targets=season.get("targets"),
+            thresholds_pct=cr.thresholds_pct,
+            no_refill=cr.no_refill,
+            min_action_usdt=float(cr.min_action_usdt),
+            season=season,
+        )
+    else:
+        rebalance = {
             "policy": "Connect exchange keys to see rebalance hints.",
             "actionable": [],
             "minor": [],
             "allocation": [],
             "needs_rebalance": False,
         }
-    )
     cycle = assess_market_cycle(
         stable_pct=portfolio.get("stable_pct") if portfolio.get("available") else None,
         fetch=True,
     )
     lock_status = _get_lock_ledger().status()
+    nd = _config.news_dip if _config else None
+    short_playbook = build_short_playbook(
+        alerts=_news_alerts(),
+        prices=_mark_prices(portfolio),
+        tracked_open=_get_short_watch().current(),
+        equity_usdt=portfolio.get("total_usdt") if portfolio.get("available") else None,
+        tp_pct=nd.take_profit_pct if nd else 0.04,
+        sl_pct=nd.stop_loss_pct if nd else 0.025,
+        time_stop_hours=nd.time_stop_hours if nd else 24,
+    )
     action_plan = (
         build_action_plan(
             portfolio,
@@ -332,6 +388,8 @@ def _build_overview(portfolio: dict) -> dict:
         "rebalance": rebalance,
         "action_plan": action_plan,
         "market_cycle": cycle,
+        "market_season": season,
+        "short_playbook": short_playbook,
         "profit_lock": {
             "date": lock_status.get("date"),
             "locked_usdt": lock_status.get("locked_usdt"),
@@ -408,6 +466,38 @@ async def dashboard(request: Request):
 @app.get("/ibkr", response_class=HTMLResponse)
 async def ibkr_dashboard(request: Request):
     return TEMPLATES.TemplateResponse(request, "ibkr.html")
+
+
+@app.get("/landing", response_class=HTMLResponse)
+async def marketing_landing(request: Request):
+    """Standalone marketing page — does not touch dashboard logic."""
+    return TEMPLATES.TemplateResponse(request, "landing.html")
+
+
+@app.post("/api/waitlist")
+async def api_waitlist(payload: dict):
+    """Marketing waitlist only — isolated from portfolio APIs."""
+    from src.web.waitlist import WaitlistStore
+
+    email = (payload or {}).get("email")
+    if not email or not isinstance(email, str):
+        return JSONResponse({"error": "email required"}, status_code=400)
+    out = Path(_config.output_dir) if _config else Path("out")
+    try:
+        result = WaitlistStore(out).add(email, source=str((payload or {}).get("source") or "landing"))
+    except ValueError as exc:
+        return JSONResponse({"error": str(exc)}, status_code=400)
+    if result.get("duplicate"):
+        return {
+            "ok": True,
+            "message": "You're already on the waitlist.",
+            **result,
+        }
+    return {
+        "ok": True,
+        "message": "You're on the list. We'll be in touch.",
+        **result,
+    }
 
 
 @app.get("/api/health")
@@ -720,7 +810,17 @@ async def api_rebalance():
             "minor": [],
             "message": portfolio.get("message") or "Portfolio unavailable",
         }
-    return rebalance_from_portfolio(portfolio)
+    out_dir = Path(_config.output_dir) if _config else Path("out")
+    cr = (_config.cycle_rebalance if _config else CycleRebalanceConfig())
+    season = assess_market_season(cr, output_dir=out_dir, fetch=bool(cr.enabled))
+    return rebalance_from_portfolio(
+        portfolio,
+        targets=season.get("targets"),
+        thresholds_pct=cr.thresholds_pct,
+        no_refill=cr.no_refill,
+        min_action_usdt=float(cr.min_action_usdt),
+        season=season,
+    )
 
 
 @app.get("/api/paper")
@@ -728,6 +828,37 @@ async def api_paper():
     if _bot is None:
         return JSONResponse({"error": "bot not ready"}, status_code=503)
     return _bot.paper.summary()
+
+
+@app.post("/api/short-watch")
+async def api_short_watch_open(payload: dict):
+    """Track a short the user opened (futures/margin). Advice only — no Binance order."""
+    nd = _config.news_dip if _config else None
+    body = dict(payload or {})
+    if nd:
+        body.setdefault("take_profit_pct", nd.take_profit_pct)
+        body.setdefault("stop_loss_pct", nd.stop_loss_pct)
+        body.setdefault("time_stop_hours", nd.time_stop_hours)
+    try:
+        pos = _get_short_watch().open_one(body)
+    except ValueError as exc:
+        return JSONResponse({"error": str(exc)}, status_code=400)
+    return {"ok": True, "position": pos}
+
+
+@app.post("/api/short-watch/close")
+async def api_short_watch_close(payload: dict):
+    pos_id = (payload or {}).get("id")
+    if not pos_id:
+        current = _get_short_watch().current()
+        pos_id = current.get("id") if current else None
+    if not pos_id:
+        return JSONResponse({"error": "no tracked short"}, status_code=400)
+    try:
+        closed = _get_short_watch().close(str(pos_id), reason=(payload or {}).get("reason") or "manual")
+    except ValueError as exc:
+        return JSONResponse({"error": str(exc)}, status_code=400)
+    return {"ok": True, "closed": closed}
 
 
 @app.get("/api/grid")

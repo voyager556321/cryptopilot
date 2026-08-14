@@ -16,6 +16,13 @@ function usd(n) {
   return `$${Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
 }
 
+function ibkrActionLabel(action) {
+  if (action === "ALERT_SHORT") return "TRIM IDEA";
+  if (action === "ALERT") return "DIP IDEA";
+  if (action === "WATCH") return "WATCH";
+  return action || "—";
+}
+
 function signedUsd(n) {
   if (n == null || Number.isNaN(Number(n))) return "—";
   const v = Number(n);
@@ -259,7 +266,7 @@ function renderIbkrNews(overview) {
             : a.news_title || "—";
           return `<tr>
             <td>${t || "—"}</td>
-            <td><span class="badge ${a.action || ""}">${a.action || "—"}</span></td>
+            <td><span class="badge ${a.action || ""}">${ibkrActionLabel(a.action)}</span></td>
             <td><strong>${a.symbol || "—"}</strong></td>
             <td>${pctDip(a.dip_pct)}</td>
             <td>${a.suggested_size_usdt ? usd(a.suggested_size_usdt) : "—"}</td>

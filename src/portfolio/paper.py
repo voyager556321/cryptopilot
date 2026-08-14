@@ -8,6 +8,8 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+_STABLES = {"USDT", "USDC", "FDUSD", "BUSD", "TUSD", "DAI"}
+
 
 class PaperJournal:
     def __init__(self, output_dir: Path, bank_usdt: float = 5000.0, max_open: int = 5):
@@ -22,6 +24,7 @@ class PaperJournal:
             "closed": [],
         }
         self._load()
+        self.drop_non_spot_opens()
 
     def _now(self) -> datetime:
         return datetime.now(timezone.utc)
@@ -47,11 +50,14 @@ class PaperJournal:
 
     def open_from_news_alert(self, alert: dict) -> Optional[dict]:
         action = alert.get("action")
-        if action not in ("ALERT", "ALERT_SHORT"):
+        if action != "ALERT":
+            # Spot risk manager: never auto-open paper shorts (ALERT_SHORT)
             return None
-        side = "long" if action == "ALERT" else "short"
+        side = "long"
         symbol = alert["symbol"]
-        strategy = alert.get("strategy") or ("news_dip" if side == "long" else "news_bear")
+        if symbol in _STABLES:
+            return None
+        strategy = alert.get("strategy") or "news_dip"
         if self._has_open(symbol, side, strategy):
             return None
         if len(self._data["open"]) >= self.max_open:
@@ -87,10 +93,13 @@ class PaperJournal:
 
     def open_from_rebalance(self, hint: dict, fraction: float = 0.25) -> Optional[dict]:
         action = hint.get("action")
-        if action not in ("BUY", "SELL"):
+        if action != "BUY":
+            # SELL / USDT "short" is not a spot-wallet action — skip paper
             return None
-        side = "long" if action == "BUY" else "short"
+        side = "long"
         symbol = hint["asset"]
+        if symbol in _STABLES:
+            return None
         strategy = "rebalance"
         if self._has_open(symbol, side, strategy):
             return None
@@ -127,8 +136,23 @@ class PaperJournal:
         self.save()
         return pos
 
+    def drop_non_spot_opens(self) -> int:
+        """Cancel paper shorts and stablecoin fills — they are not spot-wallet actions."""
+        kept = []
+        dropped = 0
+        for pos in self._data.get("open") or []:
+            if pos.get("side") == "short" or pos.get("symbol") in _STABLES:
+                dropped += 1
+                continue
+            kept.append(pos)
+        if dropped:
+            self._data["open"] = kept
+            self.save()
+        return dropped
+
     def mark_to_market(self, prices: Dict[str, float]) -> dict:
         """Update open PnL; close on TP/SL/time-stop. prices: symbol -> price."""
+        self.drop_non_spot_opens()
         still_open = []
         closed_now = []
         now = self._now()
@@ -187,6 +211,7 @@ class PaperJournal:
         return self.summary()
 
     def summary(self) -> dict:
+        self.drop_non_spot_opens()
         closed = self._data["closed"]
         realized = sum(float(p.get("realized_pnl_usdt") or 0) for p in closed)
         unrealized = sum(float(p.get("unrealized_pnl_usdt") or 0) for p in self._data["open"])

@@ -35,6 +35,31 @@ def test_rebalance_actionable_on_large_drift():
     assert any(s["asset"] == "BTC" and s["action"] == "SELL" for s in signals)
 
 
+def test_rebalance_never_buys_back_aave_satellite():
+    """After trimming AAVE, underweight must not become a BUY (no refill)."""
+    weights = {
+        "BTC": 30.0,
+        "ETH": 22.0,
+        "SOL": 8.0,
+        "BNB": 6.0,
+        "XRP": 3.0,
+        "LINK": 4.0,
+        "AAVE": 1.0,  # target 4%, under by >25% relative
+        "ZEC": 4.0,
+        "FIL": 2.0,
+        "PAXG": 6.0,
+        "USDT": 14.0,
+    }
+    total = 5000.0
+    values = {k: total * (v / 100) for k, v in weights.items()}
+    signals, minor = check_rebalance(weights, values, total)
+    assert not any(s["asset"] == "AAVE" and s["action"] == "BUY" for s in signals)
+    aave_notes = [m for m in minor if m["asset"] == "AAVE"]
+    assert aave_notes
+    assert aave_notes[0]["action"] == "HOLD"
+    assert "do not buy back" in aave_notes[0]["note"].lower() or "no refill" in aave_notes[0]["note"].lower()
+
+
 def test_rebalance_from_portfolio_payload():
     portfolio = {
         "available": True,

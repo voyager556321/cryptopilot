@@ -20,9 +20,9 @@ news_dip:
   dip_max_pct: 0.08
   volume_ratio_min: 0.8
   late_move_pct: 0.05
-  take_profit_pct: 0.04
-  stop_loss_pct: 0.025
-  time_stop_hours: 24
+  take_profit_pct: 0.04    # also used as unattended short TP
+  stop_loss_pct: 0.025     # short SL — must be an exchange order, not a dashboard hope
+  time_stop_hours: 24      # close the short even if TP/SL did not fill
   risk_per_alert_pct: 0.01
   bank_usdt: 10000.0
   signal_cooldown_minutes: 120
@@ -44,10 +44,11 @@ spot_grid:
   recenter_on_break: true
 
 # Paper-test mode: news | rebalance | grid | both | all
+# auto_paper stays OFF — fake shorts/rebalance fills look like live orders
 strategy_test:
   enabled: true
   mode: both               # news + rebalance (grid off)
-  auto_paper: true
+  auto_paper: false
   paper_bank_usdt: 5000.0
   max_open_positions: 5
   rebalance_paper_fraction: 0.25
@@ -78,6 +79,70 @@ exchange:
   name: "binance"
   sandbox: false
   dry_run: true
+
+# BTC/Alt season → phase targets for rebalance (separate from price-structure cycle)
+cycle_rebalance:
+  enabled: true
+  alt_index_btc_max: 25      # index < this + BTC.D rising → btc_season
+  alt_index_alt_min: 75      # index > this + BTC.D falling → alt_season
+  btc_d_lookback_days: 30
+  btc_d_flat_band_pct: 0.3   # |Δ BTC.D| below this → flat trend
+  cache_ttl_hours: 12
+  min_action_usdt: 20
+  no_refill:
+    - AAVE
+    - LINK
+    - FIL
+    - XRP
+  thresholds_pct:
+    BTC: 15
+    ETH: 15
+    BNB: 15
+    USDT: 15
+    SOL: 25
+    XRP: 25
+    LINK: 25
+    AAVE: 25
+    ZEC: 25
+    FIL: 25
+    PAXG: 20
+  phases:
+    btc_season:
+      BTC: 35
+      ETH: 22
+      SOL: 5
+      BNB: 4
+      XRP: 2
+      LINK: 2
+      AAVE: 2
+      ZEC: 2
+      FIL: 1
+      PAXG: 7
+      USDT: 18
+    neutral:
+      BTC: 28
+      ETH: 20
+      SOL: 8
+      BNB: 6
+      XRP: 3
+      LINK: 4
+      AAVE: 4
+      ZEC: 4
+      FIL: 2
+      PAXG: 6
+      USDT: 15
+    alt_season:
+      BTC: 22
+      ETH: 18
+      SOL: 12
+      BNB: 8
+      XRP: 4
+      LINK: 5
+      AAVE: 5
+      ZEC: 5
+      FIL: 3
+      PAXG: 5
+      USDT: 13
 
 output_dir: "out"
 initial_balance: 10000.0

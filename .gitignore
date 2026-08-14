@@ -40,6 +40,9 @@ out/
 *.log
 *.csv
 *.json
+!deploy/**/*.json
+!package.json
+!vercel.json
 
 # Test coverage
 .coverage

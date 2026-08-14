@@ -14,6 +14,7 @@ from src.news.fetch import NewsFetcher, CoinDeskProvider, CoinTelegraphProvider
 from src.news.sentiment import classify_many
 from src.portfolio.paper import PaperJournal
 from src.portfolio.rebalance_hints import rebalance_from_portfolio
+from src.portfolio.season import assess_market_season
 from src.storage.news_dip_journal import NewsDipJournal
 from src.strategy.news_dip import NewsDipStrategy
 from src.strategy.spot_grid import SpotGridPaper
@@ -129,6 +130,8 @@ class NewsDipBot:
 
                 if self.st.enabled and self.st.auto_paper:
                     for s in actionable:
+                        if s.action != "ALERT":
+                            continue
                         opened = self.paper.open_from_news_alert(s.to_dict())
                         if opened:
                             self.logger.info(
@@ -138,10 +141,15 @@ class NewsDipBot:
                             )
 
                 for s in actionable:
-                    self.logger.info(
-                        f"{s.action} {s.side} {s.symbol} @ {s.price:.4f} "
-                        f"size=${s.suggested_size_usdt:.2f} | {s.news_title}"
-                    )
+                    if s.action == "ALERT_SHORT":
+                        self.logger.info(
+                            f"NEWS CAUTION {s.symbol} — do not short spot, do not add | {s.news_title}"
+                        )
+                    else:
+                        self.logger.info(
+                            f"{s.action} {s.side} {s.symbol} @ {s.price:.4f} "
+                            f"size=${s.suggested_size_usdt:.2f} | {s.news_title}"
+                        )
 
             # --- Rebalance leg ---
             if self._run_rebalance():
@@ -150,13 +158,28 @@ class NewsDipBot:
                     api_key, api_secret, self.config.exchange.name or "binance"
                 )
                 if portfolio and portfolio.get("available"):
-                    rebalance_view = rebalance_from_portfolio(portfolio)
+                    cr = self.config.cycle_rebalance
+                    season = assess_market_season(
+                        cr,
+                        output_dir=self.config.output_dir,
+                        fetch=bool(cr.enabled),
+                    )
+                    rebalance_view = rebalance_from_portfolio(
+                        portfolio,
+                        targets=season.get("targets"),
+                        thresholds_pct=cr.thresholds_pct,
+                        no_refill=cr.no_refill,
+                        min_action_usdt=float(cr.min_action_usdt),
+                        season=season,
+                    )
                     for h in portfolio.get("holdings") or []:
                         if h.get("symbol") and h.get("price_usdt"):
                             prices[h["symbol"]] = float(h["price_usdt"])
 
                     if self.st.enabled and self.st.auto_paper:
                         for hint in rebalance_view.get("actionable") or []:
+                            if hint.get("action") != "BUY":
+                                continue
                             hint = dict(hint)
                             hint["price"] = prices.get(hint["asset"])
                             if not hint["price"]:

@@ -52,7 +52,7 @@ class AlertSignal:
 
 
 class NewsDipStrategy:
-    """Bull news+dip longs and optional bear/treasury-sell shorts."""
+    """Bull news+dip ideas and optional futures-short cautions with written exits."""
 
     def __init__(self, config: NewsDipConfig, *, domain: str = "crypto"):
         self.config = config
@@ -220,12 +220,11 @@ class NewsDipStrategy:
                 stop_loss_pct=cfg.stop_loss_pct,
                 time_stop_hours=cfg.time_stop_hours,
                 skip_reason="already_down_24h_priced_in",
-                rationale=f"{sentiment.rationale}; 24h={ch:.2%} → watch only",
-                side="short",
+                rationale=f"{sentiment.rationale}; 24h={ch:.2%} → watch only (spot: no short)",
+                side="flat",
                 strategy="news_bear",
             )
 
-        size = cfg.bank_usdt * cfg.risk_per_alert_pct
         self._last_alert_at[key] = now
 
         return AlertSignal(
@@ -242,13 +241,16 @@ class NewsDipStrategy:
             dip_pct=market.dip_pct,
             bounce_from_low_pct=market.bounce_from_low_pct,
             volume_ratio=market.volume_ratio,
-            suggested_size_usdt=round(size, 2),
+            suggested_size_usdt=0.0,
             take_profit_pct=cfg.take_profit_pct,
             stop_loss_pct=cfg.stop_loss_pct,
             time_stop_hours=cfg.time_stop_hours,
             skip_reason="",
-            rationale=sentiment.rationale,
-            side="short",
+            rationale=(
+                f"{sentiment.rationale}; optional futures short only — see exit card "
+                "(SL on exchange + TP + 24h clock). Not a spot order."
+            ),
+            side="flat",
             strategy="news_bear",
         )
 

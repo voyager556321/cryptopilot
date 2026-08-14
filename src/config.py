@@ -117,7 +117,7 @@ class StrategyTestConfig(BaseModel):
     enabled: bool = True
     # news | rebalance | grid | both | all
     mode: str = Field(default="both")
-    auto_paper: bool = True
+    auto_paper: bool = False
     paper_bank_usdt: float = Field(default=5000.0, ge=0.0)
     max_open_positions: int = Field(default=5, ge=1)
     rebalance_paper_fraction: float = Field(
@@ -133,6 +133,36 @@ class StrategyTestConfig(BaseModel):
         if v not in ("news", "rebalance", "grid", "both", "all"):
             raise ValueError("strategy_test.mode must be news|rebalance|grid|both|all")
         return v
+
+
+class CycleRebalanceConfig(BaseModel):
+    """BTC/Alt season → phase allocation targets for dry-run rebalance."""
+    enabled: bool = True
+    alt_index_btc_max: float = Field(default=25.0, ge=0.0, le=100.0)
+    alt_index_alt_min: float = Field(default=75.0, ge=0.0, le=100.0)
+    btc_d_lookback_days: int = Field(default=30, ge=1)
+    btc_d_flat_band_pct: float = Field(default=0.3, ge=0.0)
+    cache_ttl_hours: float = Field(default=12.0, ge=0.5)
+    min_action_usdt: float = Field(default=20.0, ge=0.0)
+    no_refill: List[str] = Field(default_factory=lambda: ["AAVE", "LINK", "FIL", "XRP"])
+    thresholds_pct: Dict[str, float] = Field(default_factory=lambda: {
+        "BTC": 15, "ETH": 15, "BNB": 15, "USDT": 15,
+        "SOL": 25, "XRP": 25, "LINK": 25, "AAVE": 25, "ZEC": 25, "FIL": 25, "PAXG": 20,
+    })
+    phases: Dict[str, Dict[str, float]] = Field(default_factory=lambda: {
+        "btc_season": {
+            "BTC": 35, "ETH": 22, "SOL": 5, "BNB": 4, "XRP": 2,
+            "LINK": 2, "AAVE": 2, "ZEC": 2, "FIL": 1, "PAXG": 7, "USDT": 18,
+        },
+        "neutral": {
+            "BTC": 28, "ETH": 20, "SOL": 8, "BNB": 6, "XRP": 3,
+            "LINK": 4, "AAVE": 4, "ZEC": 4, "FIL": 2, "PAXG": 6, "USDT": 15,
+        },
+        "alt_season": {
+            "BTC": 22, "ETH": 18, "SOL": 12, "BNB": 8, "XRP": 4,
+            "LINK": 5, "AAVE": 5, "ZEC": 5, "FIL": 3, "PAXG": 5, "USDT": 13,
+        },
+    })
 
 
 class ExchangeConfig(BaseModel):
@@ -178,6 +208,9 @@ class Settings(BaseSettings):
 
     # Paper strategy test (news and/or rebalance)
     strategy_test: StrategyTestConfig = Field(default_factory=StrategyTestConfig)
+
+    # Cycle-aware rebalance (BTC/Alt season targets)
+    cycle_rebalance: CycleRebalanceConfig = Field(default_factory=CycleRebalanceConfig)
     
     # Exchange
     exchange: ExchangeConfig = Field(default_factory=ExchangeConfig)

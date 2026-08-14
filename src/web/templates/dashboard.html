@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>News+Dip · Overview</title>
-  <link rel="stylesheet" href="/static/dashboard.css" />
+  <link rel="stylesheet" href="/static/dashboard.css?v=season1" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
@@ -12,7 +12,7 @@
     <div>
       <h1>Crypto Overview</h1>
       <p class="subtitle">
-        Binance · threshold rebalance · news+dip · no auto-orders
+        Binance spot · advice only · no auto-orders · no shorts
       </p>
     </div>
     <div class="conn" id="conn-badge">Checking keys…</div>
@@ -26,34 +26,7 @@
   <div class="actions">
     <button id="sync-btn" type="button">Sync portfolio</button>
     <button class="secondary" id="reload-btn" type="button">Reload view</button>
-    <button class="secondary" id="reset-paper-btn" type="button">Reset demo paper</button>
-    <div class="mode-switch" id="mode-switch">
-      <span class="mode-label">Test mode:</span>
-      <button type="button" class="secondary mode-btn" data-mode="news">News</button>
-      <button type="button" class="secondary mode-btn" data-mode="rebalance">Rebalance</button>
-      <button type="button" class="secondary mode-btn" data-mode="both">Both</button>
-    </div>
     <span id="last-run" class="status">Last sync: —</span>
-  </div>
-
-  <div class="grid" id="paper-summary">
-    <div class="card">
-      <h3>Paper PnL</h3>
-      <div class="value" id="stat-paper-pnl">—</div>
-      <p class="status" id="paper-meta">Virtual trades only</p>
-    </div>
-    <div class="card">
-      <h3>Open / Closed</h3>
-      <div class="value" id="stat-paper-counts">—</div>
-    </div>
-    <div class="card">
-      <h3>Wins / Losses</h3>
-      <div class="value" id="stat-paper-wl">—</div>
-    </div>
-    <div class="card">
-      <h3>By strategy</h3>
-      <div class="value small" id="stat-paper-by">—</div>
-    </div>
   </div>
 
   <section class="overview-hero card">
@@ -89,7 +62,7 @@
 
   <div class="section">
     <h2>Market cycle (BTC)</h2>
-    <p class="hint">Coarse regime from price structure — not a bottom call. Affects USDT cushion and profit-lock urgency.</p>
+    <p class="hint">Two layers: price structure (USDT / profit-lock) and BTC/Alt season (rebalance targets).</p>
     <div class="card action-plan-card" id="cycle-card" data-mode="unknown">
       <div class="action-plan-head">
         <span class="badge" id="cycle-mode-badge">—</span>
@@ -98,6 +71,14 @@
       <ul class="action-checklist" id="cycle-checklist"></ul>
       <p class="status" id="cycle-levels"></p>
       <p class="status" id="cycle-note"></p>
+    </div>
+    <div class="card action-plan-card" id="season-card" data-mode="neutral" style="margin-top:0.75rem">
+      <div class="action-plan-head">
+        <span class="badge" id="season-mode-badge">season</span>
+        <p class="action-headline" id="season-headline">—</p>
+      </div>
+      <ul class="action-checklist" id="season-checklist"></ul>
+      <p class="status" id="season-note"></p>
     </div>
   </div>
 
@@ -154,33 +135,45 @@
   </div>
 
   <div class="section">
-    <h2>Paper positions</h2>
-    <p class="hint">Auto journal for testing: news long/short + threshold rebalance. No real orders. TP/SL/time-stop close virtually.</p>
-    <div class="card table-card">
-      <table>
-        <thead>
-          <tr>
-            <th>Opened</th>
-            <th>Strategy</th>
-            <th>Side</th>
-            <th>Asset</th>
-            <th>Entry</th>
-            <th>Mark</th>
-            <th>Size</th>
-            <th>PnL</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="paper-body"></tbody>
-      </table>
+    <h2>Optional short (futures, not spot)</h2>
+    <p class="hint">
+      You do not sit on the chart. If you take a short, the three exits are written first:
+      exchange stop, take-profit, 24h clock. This card then says EXIT NOW and why.
+      Not a Binance order.
+    </p>
+    <div class="card action-plan-card" id="short-playbook-card" data-mode="idle">
+      <div class="action-plan-head">
+        <span class="badge" id="short-mode-badge">idle</span>
+        <p class="action-headline" id="short-headline">—</p>
+      </div>
+      <ul class="action-checklist" id="short-checklist"></ul>
+      <div class="card table-card nested-table" id="short-rules-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Exit</th>
+              <th>Trigger</th>
+              <th>Why</th>
+              <th>State</th>
+            </tr>
+          </thead>
+          <tbody id="short-rules-body"></tbody>
+        </table>
+      </div>
+      <p class="status" id="short-note"></p>
+      <div class="lock-form" id="short-actions">
+        <button type="button" id="short-track-btn">I'm in — track exits</button>
+        <button type="button" class="secondary" id="short-close-btn">I closed it</button>
+      </div>
     </div>
   </div>
 
   <div class="section">
     <h2>Rebalance hints</h2>
     <p class="hint" id="rebalance-policy">
-      Not a daily rebalance — only when weight drifts far from target (15–25%) and size ≥ $20, or fees eat the edge.
+      Cycle-aware targets by BTC/Alt season · relative bands · dry-run only.
     </p>
+    <p class="status warn-banner" id="rebalance-phase-banner" style="display:none"></p>
     <div class="card table-card">
       <table>
         <thead>
@@ -269,7 +262,7 @@
             <th>Asset</th>
             <th>Price</th>
             <th>Dip</th>
-            <th>Size</th>
+            <th>Note</th>
             <th>News</th>
             <th>Sentiment</th>
           </tr>
@@ -324,7 +317,61 @@
     </div>
   </div>
 
+  <div class="section" data-fold-id="paper-sandbox" data-fold-default="collapsed">
+    <h2>Sandbox (not the wallet)</h2>
+    <p class="hint">
+      Virtual journal only — not Binance, not a short, not an order.
+      Auto-paper is off. Bear news is a caution, not a futures short.
+    </p>
+    <div class="actions" style="margin:0 0 0.75rem;padding:0;border:0">
+      <button class="secondary" id="reset-paper-btn" type="button">Reset sandbox</button>
+      <div class="mode-switch" id="mode-switch">
+        <span class="mode-label">Sandbox scan:</span>
+        <button type="button" class="secondary mode-btn" data-mode="news">News</button>
+        <button type="button" class="secondary mode-btn" data-mode="rebalance">Rebalance</button>
+        <button type="button" class="secondary mode-btn" data-mode="both">Both</button>
+      </div>
+    </div>
+    <div class="grid" id="paper-summary">
+      <div class="card">
+        <h3>Sandbox PnL</h3>
+        <div class="value" id="stat-paper-pnl">—</div>
+        <p class="status" id="paper-meta">Not the spot portfolio</p>
+      </div>
+      <div class="card">
+        <h3>Open / Closed</h3>
+        <div class="value" id="stat-paper-counts">—</div>
+      </div>
+      <div class="card">
+        <h3>Wins / Losses</h3>
+        <div class="value" id="stat-paper-wl">—</div>
+      </div>
+      <div class="card">
+        <h3>By strategy</h3>
+        <div class="value small" id="stat-paper-by">—</div>
+      </div>
+    </div>
+    <div class="card table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Opened</th>
+            <th>Strategy</th>
+            <th>Side</th>
+            <th>Asset</th>
+            <th>Entry</th>
+            <th>Mark</th>
+            <th>Size</th>
+            <th>PnL</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="paper-body"></tbody>
+      </table>
+    </div>
+  </div>
+
   <script src="/static/fold.js?v=2"></script>
-  <script src="/static/dashboard.js?v=en1"></script>
+  <script src="/static/dashboard.js?v=season1"></script>
 </body>
 </html>
