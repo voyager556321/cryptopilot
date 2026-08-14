@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IBKR · Simple</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="top">
+    <div>
+      <h1>IBKR Stocks</h1>
+      <p class="subtitle">Hold · каса · місячний долив у CSPX · без авто-ордерів</p>
+    </div>
+    <div class="conn" id="conn-badge">IBKR snapshot</div>
+  </header>
+
+  <nav class="account-nav">
+    <a class="account-tab" href="/">Crypto</a>
+    <a class="account-tab active" href="/ibkr">IBKR Stocks</a>
+  </nav>
+
+  <div class="actions">
+    <button id="ibkr-reload-btn" type="button">Reload</button>
+    <button class="secondary" id="ibkr-flex-btn" type="button">Sync from Flex</button>
+    <span id="ibkr-last-run" class="status">File snapshot</span>
+  </div>
+  <p class="hint" id="ibkr-flex-hint">Flex: IBKR_FLEX_TOKEN + IBKR_FLEX_QUERY_ID у .env</p>
+
+  <section class="overview-hero card">
+    <div class="overview-main">
+      <h3>Total</h3>
+      <div class="value" id="ibkr-stat-total">—</div>
+      <p class="pnl-line" id="ibkr-today-pnl">Daily P&L: —</p>
+      <p class="status" id="ibkr-meta">Loading…</p>
+    </div>
+    <div class="overview-chart ibkr-stats">
+      <p><strong>Cash</strong>: <span id="ibkr-cash">—</span></p>
+      <p><strong>Unrealized</strong>: <span id="ibkr-unrealized">—</span></p>
+      <p><strong>Lines</strong>: <span id="ibkr-count">—</span> <span class="hint" id="ibkr-lines-hint"></span></p>
+    </div>
+  </section>
+
+  <div class="section" data-fold-id="plan">
+    <h2>Простий план</h2>
+    <div class="card simple-plan-card">
+      <div class="action-plan-head">
+        <span class="badge" id="ibkr-action-badge">hold</span>
+        <p class="action-headline" id="ibkr-action-headline">—</p>
+      </div>
+      <ul class="action-checklist" id="ibkr-simple-rules">
+        <li>Нові гроші → переважно <strong>CSPX</strong>, трохи CIBR</li>
+        <li>Cash тримай ~20–30% · не all-in</li>
+        <li>Не доливай IONQ / WTAI / speculative «бо впало»</li>
+        <li>Ціль: ≤8 ліній · пил зливай у CSPX</li>
+      </ul>
+      <ul class="action-checklist" id="ibkr-action-checklist"></ul>
+      <div class="card table-card nested-table" id="ibkr-sells-wrap" style="display:none">
+        <table>
+          <thead>
+            <tr><th>Sell</th><th>USD</th><th>% bag</th><th>Why</th></tr>
+          </thead>
+          <tbody id="ibkr-sells-body"></tbody>
+        </table>
+      </div>
+      <p class="status" id="ibkr-action-note"></p>
+      <p class="hint" id="ibkr-action-rules" style="display:none"></p>
+      <div id="ibkr-action-card" data-mode="hold" style="display:none"></div>
+    </div>
+  </div>
+
+  <div class="section" data-fold-id="holdings">
+    <h2>Holdings</h2>
+    <p class="hint">Роль: keep = тримай · build = доливай план · satellite = не докуповуй · dust = кандидат у CSPX</p>
+    <div class="card table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Symbol</th><th>Role</th><th>MV</th><th>%</th><th>vs cost</th>
+          </tr>
+        </thead>
+        <tbody id="ibkr-holdings-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section" data-fold-id="rebalance" data-fold-default="collapsed">
+    <h2>Rebalance / caps</h2>
+    <p class="hint" id="ibkr-rebalance-policy">Name caps · cash · consolidate dust</p>
+    <div class="card table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Asset</th><th>Action</th><th>Current %</th><th>Target %</th>
+            <th>Drift</th><th>USD</th><th>Note</th>
+          </tr>
+        </thead>
+        <tbody id="ibkr-rebalance-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section" data-fold-id="sleeves" data-fold-default="collapsed">
+    <h2>Sleeves</h2>
+    <div class="card table-card">
+      <table>
+        <thead>
+          <tr><th>Sleeve</th><th>Current %</th><th>Target %</th><th>Gap</th><th>Value</th></tr>
+        </thead>
+        <tbody id="ibkr-sleeve-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section" data-fold-id="swing" data-fold-default="collapsed">
+    <h2>Swing (опційно)</h2>
+    <p class="hint" id="ibkr-swing-headline">Dip buy / strength sell — лише якщо каса ок</p>
+    <ul class="action-checklist" id="ibkr-swing-rules"></ul>
+    <div class="two-col">
+      <div class="card table-card">
+        <h3 style="margin:0.75rem 1rem 0.35rem;font-size:0.95rem">Buy dips</h3>
+        <table>
+          <thead>
+            <tr><th>Symbol</th><th>vs cost</th><th>Add</th><th>Note</th></tr>
+          </thead>
+          <tbody id="ibkr-swing-buys"></tbody>
+        </table>
+      </div>
+      <div class="card table-card">
+        <h3 style="margin:0.75rem 1rem 0.35rem;font-size:0.95rem">Sell strength</h3>
+        <table>
+          <thead>
+            <tr><th>Symbol</th><th>vs cost</th><th>Sell</th><th>Keep</th></tr>
+          </thead>
+          <tbody id="ibkr-swing-sells"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" data-fold-id="hybrid" data-fold-default="collapsed">
+    <h2>Hybrid EMA</h2>
+    <p class="hint" id="ibkr-hybrid-headline">EMA20/50 — для охочих копати глибше</p>
+    <ul class="action-checklist" id="ibkr-hybrid-rules"></ul>
+    <div class="actions" style="margin:0.5rem 0 0.75rem">
+      <button type="button" class="secondary" id="ibkr-hybrid-btn">Refresh EMA</button>
+      <span class="status" id="ibkr-hybrid-status">Натисни Refresh EMA</span>
+    </div>
+    <div class="card table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Symbol</th><th>Вердикт</th><th>Горизонт</th>
+            <th>% / cap</th><th>EMA20</th><th>EMA50</th><th>Сигнал</th>
+          </tr>
+        </thead>
+        <tbody id="ibkr-hybrid-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section" data-fold-id="chart" data-fold-default="collapsed">
+    <h2>Chart</h2>
+    <div class="actions" style="margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem">
+      <label>
+        Symbol
+        <select id="ibkr-chart-symbol"></select>
+      </label>
+      <label>
+        Range
+        <select id="ibkr-chart-range">
+          <option value="1mo">1M</option>
+          <option value="3mo">3M</option>
+          <option value="6mo" selected>6M</option>
+          <option value="1y">1Y</option>
+        </select>
+      </label>
+      <button type="button" class="secondary" id="ibkr-chart-btn">Load chart</button>
+      <span class="status" id="ibkr-chart-status"></span>
+    </div>
+    <div class="card" style="padding:0.75rem 1rem">
+      <canvas id="ibkr-price-chart" height="160"></canvas>
+    </div>
+  </div>
+
+  <div class="section" data-fold-id="news" data-fold-default="collapsed">
+    <h2>News + dip</h2>
+    <p class="hint">Yahoo headlines — без авто-ордерів</p>
+    <div class="actions" style="margin-bottom:0.75rem">
+      <button type="button" class="secondary" id="ibkr-news-btn">Refresh news</button>
+      <span class="status" id="ibkr-news-status">Згорнуто · відкрий за потреби</span>
+    </div>
+    <div class="card table-card">
+      <h3 style="margin:0.75rem 1rem 0.35rem;font-size:0.95rem">Alerts</h3>
+      <table>
+        <thead>
+          <tr><th>Time</th><th>Action</th><th>Symbol</th><th>Dip</th><th>Size</th><th>Headline</th></tr>
+        </thead>
+        <tbody id="ibkr-alerts-body"></tbody>
+      </table>
+    </div>
+    <div class="card table-card" style="margin-top:0.75rem">
+      <h3 style="margin:0.75rem 1rem 0.35rem;font-size:0.95rem">News</h3>
+      <table>
+        <thead>
+          <tr><th>Sentiment</th><th>Assets</th><th>Source</th><th>Title</th></tr>
+        </thead>
+        <tbody id="ibkr-news-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section" data-fold-id="advanced" data-fold-default="collapsed">
+    <h2>Advanced</h2>
+    <div class="actions">
+      <button class="secondary" id="ibkr-reseeds-btn" type="button">Reset to screenshot seed</button>
+    </div>
+  </div>
+
+  <script src="/static/fold.js?v=2"></script>
+  <script src="/static/ibkr.js?v=simple1"></script>
+</body>
+</html>

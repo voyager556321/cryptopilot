@@ -1,0 +1,83 @@
+# News + dip / rebalance / spot-grid (paper only, no live orders)
+
+mode: alerts
+
+news_dip:
+  enabled: true
+  symbols:
+    - BTC
+    - ETH
+    - SOL
+    - ZEC
+  quote: USDT
+  news_sources:
+    - coindesk
+    - cointelegraph
+  news_window_minutes: 60
+  poll_interval_seconds: 60
+  dip_lookback_hours: 24
+  dip_min_pct: 0.03
+  dip_max_pct: 0.08
+  volume_ratio_min: 0.8
+  late_move_pct: 0.05
+  take_profit_pct: 0.04
+  stop_loss_pct: 0.025
+  time_stop_hours: 24
+  risk_per_alert_pct: 0.01
+  bank_usdt: 10000.0
+  signal_cooldown_minutes: 120
+  require_high_confidence: true
+  ohlcv_timeframe: "1h"
+  ohlcv_limit: 48
+  enable_bear_alerts: true
+  bear_late_move_pct: 0.04
+
+# Spot grid — disabled (paper clutter; re-enable if ranging market)
+spot_grid:
+  enabled: false
+  symbol: BTC
+  levels: 10
+  range_pct: 0.04          # ±2% around mid
+  order_size_usdt: 50.0
+  fee_bps: 10
+  bank_usdt: 1000.0
+  recenter_on_break: true
+
+# Paper-test mode: news | rebalance | grid | both | all
+strategy_test:
+  enabled: true
+  mode: both               # news + rebalance (grid off)
+  auto_paper: true
+  paper_bank_usdt: 5000.0
+  max_open_positions: 5
+  rebalance_paper_fraction: 0.25
+
+assets:
+  - symbol: "BTC"
+    max_weight: 0.60
+    min_weight: 0.0
+    is_stablecoin: false
+  - symbol: "ETH"
+    max_weight: 0.40
+    min_weight: 0.0
+    is_stablecoin: false
+  - symbol: "SOL"
+    max_weight: 0.20
+    min_weight: 0.0
+    is_stablecoin: false
+  - symbol: "ZEC"
+    max_weight: 0.05
+    min_weight: 0.0
+    is_stablecoin: false
+  - symbol: "USDT"
+    max_weight: 1.0
+    min_weight: 0.0
+    is_stablecoin: true
+
+exchange:
+  name: "binance"
+  sandbox: false
+  dry_run: true
+
+output_dir: "out"
+initial_balance: 10000.0

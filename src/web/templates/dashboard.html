@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>News+Dip · Overview</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="top">
+    <div>
+      <h1>Crypto Overview</h1>
+      <p class="subtitle">
+        Binance · threshold rebalance · news+dip · no auto-orders
+      </p>
+    </div>
+    <div class="conn" id="conn-badge">Checking keys…</div>
+  </header>
+
+  <nav class="account-nav">
+    <a class="account-tab active" href="/">Crypto</a>
+    <a class="account-tab" href="/ibkr">IBKR Stocks</a>
+  </nav>
+
+  <div class="actions">
+    <button id="sync-btn" type="button">Sync portfolio</button>
+    <button class="secondary" id="reload-btn" type="button">Reload view</button>
+    <button class="secondary" id="reset-paper-btn" type="button">Reset demo paper</button>
+    <div class="mode-switch" id="mode-switch">
+      <span class="mode-label">Test mode:</span>
+      <button type="button" class="secondary mode-btn" data-mode="news">News</button>
+      <button type="button" class="secondary mode-btn" data-mode="rebalance">Rebalance</button>
+      <button type="button" class="secondary mode-btn" data-mode="both">Both</button>
+    </div>
+    <span id="last-run" class="status">Last sync: —</span>
+  </div>
+
+  <div class="grid" id="paper-summary">
+    <div class="card">
+      <h3>Paper PnL</h3>
+      <div class="value" id="stat-paper-pnl">—</div>
+      <p class="status" id="paper-meta">Virtual trades only</p>
+    </div>
+    <div class="card">
+      <h3>Open / Closed</h3>
+      <div class="value" id="stat-paper-counts">—</div>
+    </div>
+    <div class="card">
+      <h3>Wins / Losses</h3>
+      <div class="value" id="stat-paper-wl">—</div>
+    </div>
+    <div class="card">
+      <h3>By strategy</h3>
+      <div class="value small" id="stat-paper-by">—</div>
+    </div>
+  </div>
+
+  <section class="overview-hero card">
+    <div class="overview-main">
+      <h3>Est. total value</h3>
+      <div class="value" id="stat-portfolio">—</div>
+      <p class="pnl-line" id="today-pnl">Today's PnL: —</p>
+      <p class="status" id="portfolio-meta">Loading…</p>
+    </div>
+    <div class="overview-chart">
+      <canvas id="equity-chart" height="110"></canvas>
+    </div>
+  </section>
+
+  <div class="grid" id="summary-grid">
+    <div class="card">
+      <h3>24h change</h3>
+      <div class="value" id="stat-24h">—</div>
+    </div>
+    <div class="card">
+      <h3>7d change</h3>
+      <div class="value" id="stat-7d">—</div>
+    </div>
+    <div class="card">
+      <h3>BTC + ETH</h3>
+      <div class="value" id="stat-btc-eth">—</div>
+    </div>
+    <div class="card">
+      <h3>Stable / Alts</h3>
+      <div class="value" id="stat-mix">—</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Market cycle (BTC)</h2>
+    <p class="hint">Coarse regime from price structure — not a bottom call. Affects USDT cushion and profit-lock urgency.</p>
+    <div class="card action-plan-card" id="cycle-card" data-mode="unknown">
+      <div class="action-plan-head">
+        <span class="badge" id="cycle-mode-badge">—</span>
+        <p class="action-headline" id="cycle-headline">—</p>
+      </div>
+      <ul class="action-checklist" id="cycle-checklist"></ul>
+      <p class="status" id="cycle-levels"></p>
+      <p class="status" id="cycle-note"></p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>What to do today</h2>
+    <p class="hint" id="action-rules">
+      Green day: lock ~30% of daily PnL into USDT. Red day: trim alts partially, don't dump everything. Advice only — no auto-orders.
+    </p>
+    <div class="card action-plan-card" id="action-plan-card" data-mode="hold">
+      <div class="action-plan-head">
+        <span class="badge" id="action-mode-badge">hold</span>
+        <p class="action-headline" id="action-headline">—</p>
+      </div>
+      <ul class="action-checklist" id="action-checklist"></ul>
+      <div class="card table-card nested-table" id="action-sells-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Sell</th>
+              <th>USDT</th>
+              <th>% bag</th>
+              <th>Why</th>
+            </tr>
+          </thead>
+          <tbody id="action-sells-body"></tbody>
+        </table>
+      </div>
+      <p class="status" id="action-note"></p>
+      <div class="lock-form" id="lock-actions">
+        <button type="button" class="secondary" id="lock-detect-btn">Detect from Binance</button>
+        <button type="button" class="secondary" id="lock-reset-btn">Reset today</button>
+        <span class="status" id="lock-status">Locked today: $0</span>
+      </div>
+    </div>
+    <p class="hint" style="margin-top:0.75rem">Take-profit only: alt sells on days when the portfolio was green (≥$10). Defense / days without history don't count.</p>
+    <div class="grid mini" id="locked-periods">
+      <div class="card">
+        <h3>Day</h3>
+        <div class="value" id="lock-period-day">—</div>
+      </div>
+      <div class="card">
+        <h3>Week</h3>
+        <div class="value" id="lock-period-week">—</div>
+      </div>
+      <div class="card">
+        <h3>Month</h3>
+        <div class="value" id="lock-period-month">—</div>
+      </div>
+      <div class="card">
+        <h3>3 mo</h3>
+        <div class="value" id="lock-period-quarter">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Paper positions</h2>
+    <p class="hint">Auto journal for testing: news long/short + threshold rebalance. No real orders. TP/SL/time-stop close virtually.</p>
+    <div class="card table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Opened</th>
+            <th>Strategy</th>
+            <th>Side</th>
+            <th>Asset</th>
+            <th>Entry</th>
+            <th>Mark</th>
+            <th>Size</th>
+            <th>PnL</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="paper-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Rebalance hints</h2>
+    <p class="hint" id="rebalance-policy">
+      Not a daily rebalance — only when weight drifts far from target (15–25%) and size ≥ $20, or fees eat the edge.
+    </p>
+    <div class="card table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Asset</th>
+            <th>Action</th>
+            <th>Current %</th>
+            <th>Target %</th>
+            <th>Drift</th>
+            <th>Amount USDT</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody id="rebalance-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Holdings vs target</h2>
+    <div class="card table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Asset</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Value USDT</th>
+            <th>Current %</th>
+            <th>Target %</th>
+            <th>Gap</th>
+          </tr>
+        </thead>
+        <tbody id="portfolio-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Allocation map</h2>
+    <div class="card table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Asset</th>
+            <th>Current %</th>
+            <th>Target %</th>
+            <th>Gap</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody id="allocation-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Config (.env + news_dip.yaml)</h2>
+    <div class="card">
+      <div class="config-grid" id="config-grid">
+        <p class="status">Loading…</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid" id="alert-summary">
+    <div class="card">
+      <h3>Alerts (recent)</h3>
+      <div class="value" id="stat-alerts">—</div>
+    </div>
+    <div class="card">
+      <h3>Markets tracked</h3>
+      <div class="value" id="stat-markets">—</div>
+    </div>
+  </div>
+
+  <div class="grid markets" id="markets"></div>
+
+  <div class="section">
+    <h2>Alerts</h2>
+    <div class="card table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Asset</th>
+            <th>Price</th>
+            <th>Dip</th>
+            <th>Size</th>
+            <th>News</th>
+            <th>Sentiment</th>
+          </tr>
+        </thead>
+        <tbody id="alerts-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Recent signals</h2>
+    <div class="card table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Asset</th>
+            <th>Action</th>
+            <th>Reason</th>
+            <th>Dip</th>
+            <th>Vol×</th>
+          </tr>
+        </thead>
+        <tbody id="signals-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="section">
+      <h2>News feed</h2>
+      <div class="card">
+        <ul id="news-list" class="news-list"></ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Accounts (from .env)</h2>
+      <div class="card table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Source</th>
+              <th>Key</th>
+              <th>Last sync</th>
+            </tr>
+          </thead>
+          <tbody id="accounts-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/fold.js?v=2"></script>
+  <script src="/static/dashboard.js?v=en1"></script>
+</body>
+</html>
