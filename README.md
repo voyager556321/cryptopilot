@@ -99,6 +99,26 @@ WAITLIST_TELEGRAM_CHAT_ID=123456789
 
 Do **not** deploy the FastAPI dashboard to Vercel.
 
+## Backtest (validate ``build_action_plan``)
+
+Uses the **same** production function as `/api/overview` — no parallel strategy.
+
+```bash
+python -m src.tools.backtest_action_plan
+# writes out/backtest/{summary,journal,equity}.json
+```
+
+Compares **CryptoPilot** (simulated profit-lock execution) vs **Buy & Hold** vs **USDT-heavy (50%)** on:
+
+- total return / CAGR
+- max drawdown
+- volatility / Sharpe
+- profit locks, locked USDT, trades, missed upside vs buy&hold
+
+Journal rows include action + reasons and forward returns **1d / 3d / 7d**.
+
+Honest limit: history CSV has sleeve % only (no per-coin bags); bags are reconstructed for trim ordering.
+
 ## Tests
 
 ```bash
