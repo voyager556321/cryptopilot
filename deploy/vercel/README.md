@@ -1,12 +1,13 @@
-# CryptoPilot landing → Vercel
+# CryptoPilot landing → Vercel (Next.js)
 
-Тільки маркетинг-сторінка + waitlist. Дашборд / Binance сюди **не** деплоїти.
+Маркетинг-сторінка + waitlist. Дашборд / Binance сюди **не** деплоїти.
 
 ## Швидкий старт
 
 ```bash
 cd deploy/vercel
-npx vercel
+npm install
+npm run dev
 ```
 
 Продакшен:
@@ -15,7 +16,8 @@ npx vercel
 npx vercel --prod
 ```
 
-Або: [vercel.com/new](https://vercel.com/new) → Import Git repo → Root Directory = `deploy/vercel`.
+Або: [vercel.com/new](https://vercel.com/new) → Import Git repo → **Root Directory** = `deploy/vercel`.
+Framework має визначитись як **Next.js**.
 
 ## Що отримаєш
 
@@ -27,34 +29,26 @@ npx vercel --prod
 
 ## Analytics
 
-У `index.html` вже підключено Vercel Web Analytics (HTML snippet, без Next.js).
+У `app/layout.tsx`:
 
-1. У дашборді Vercel увімкни **Web Analytics** для проєкту.
-2. У вікні інструкцій обери framework **HTML** / **Other** — не Next.js (`npm i @vercel/analytics` тут не потрібен).
-3. Задеплой і відкрий сайт — pageviews підуть самі; waitlist шле подію `WaitlistSignup`.
+```tsx
+import { Analytics } from "@vercel/analytics/next"
+```
 
-## Waitlist (обов’язково для продакшену)
+1. Увімкни **Web Analytics** у проєкті Vercel.
+2. Framework у підказках: **Next.js**.
+3. Після деплою відкрий сайт — pageviews збираються самі; waitlist шле подію `WaitlistSignup`.
 
-На Vercel файлова система **не постійна** — `out/waitlist.json` не спрацює.
+## Waitlist
 
-У Project Settings → Environment Variables додай:
+У Project Settings → Environment Variables:
 
 ```
 WAITLIST_WEBHOOK_URL=https://...
 ```
 
-Підходить Discord Incoming Webhook, Slack, n8n, Make, Zapier.
-
-Без змінної форма все одно відповість «You're on the list», але email лише в логах функції (Vercel → Deployments → Functions → Logs).
+Discord / Slack / n8n / Make / Zapier. Без змінної email лише в логах функції.
 
 ## Домен
 
-Vercel → Project → Domains → додай `cryptopilot.app` (або свій) і пропиши DNS як покаже Vercel.
-
-## Чого тут немає
-
-- Crypto / IBKR дашборд
-- Binance API keys
-- Фоновий портфоліо-синк
-
-Це лишається локально або на VPS / Railway / Render.
+Vercel → Project → Domains. `*.vercel.app` безкоштовно; свій домен — опційно.
