@@ -122,19 +122,23 @@ body.lp {
   background: var(--lp-text);
   border-radius: 1px;
 }
-.lp-nav .lp-btn-sm { display: none; }
+.lp-nav .lp-btn-sm { display: inline-flex; }
 
 .lp-mobile-nav {
-  display: flex;
+  display: none;
   flex-direction: column;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem 1.25rem;
+  gap: 0.15rem;
+  padding: 0.35rem 1rem 0.85rem;
   border-top: 1px solid var(--lp-border);
+}
+.lp-mobile-nav.is-open {
+  display: flex;
 }
 .lp-mobile-nav a {
   color: var(--lp-text);
   text-decoration: none;
-  padding: 0.35rem 0;
+  padding: 0.55rem 0;
+  font-size: 0.95rem;
 }
 
 @media (min-width: 768px) {
@@ -173,6 +177,32 @@ body.lp {
 .lp-btn-ghost:hover { background: var(--lp-card); }
 .lp-btn-sm { padding: 0.45rem 0.9rem; font-size: 0.85rem; }
 .lp-btn-lg { padding: 0.9rem 1.4rem; font-size: 1rem; }
+
+@media (max-width: 767px) {
+  .lp-wrap { width: min(100% - 1.5rem, var(--lp-max)); }
+  .lp-nav-inner { min-height: 3.25rem; gap: 0.6rem; }
+  .lp-nav .lp-btn-sm { padding: 0.38rem 0.7rem; font-size: 0.78rem; }
+  .lp-sticky-msg {
+    position: static;
+    font-size: 0.75rem;
+    padding: 0.4rem 0.85rem;
+  }
+  .lp-hero { padding: 1.35rem 0 2rem; }
+  .lp-hero-grid { gap: 1.5rem; }
+  .lp-hero h1 { font-size: 1.6rem; }
+  .lp-lede { font-size: 1rem; margin-bottom: 1.1rem; }
+  .lp-hero-cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .lp-hero-cta .lp-btn { width: 100%; }
+  .lp-section { padding: 2.5rem 0; }
+  .lp-section h2 { margin-bottom: 1.15rem; }
+  .lp-product-card { padding: 1.15rem 1.1rem 1rem; }
+  .lp-product-action { font-size: 1.45rem; }
+  .lp-ba-card { padding: 1.1rem 1.15rem; }
+  .lp-form .lp-btn { width: 100%; }
+}
 
 /* Sticky mantra under nav */
 .lp-sticky-msg {

@@ -25,14 +25,17 @@ export default function Nav() {
           className="lp-nav-toggle"
           aria-expanded={open}
           aria-controls="mobile-nav"
-          aria-label="Open menu"
+          aria-label={open ? "Close menu" : "Open menu"}
           onClick={() => setOpen((v) => !v)}
         >
           <span></span>
           <span></span>
         </button>
       </div>
-      <nav className="lp-mobile-nav" id="mobile-nav" hidden={!open}>
+      <nav
+        className={"lp-mobile-nav" + (open ? " is-open" : "")}
+        id="mobile-nav"
+      >
         <a href="#before-after" onClick={() => setOpen(false)}>
           Before / After
         </a>
