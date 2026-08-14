@@ -25,6 +25,14 @@ npx vercel --prod
 | `/landing` | Redirect на `/` |
 | `/api/waitlist` | POST `{ "email": "..." }` |
 
+## Analytics
+
+У `index.html` вже підключено Vercel Web Analytics (HTML snippet, без Next.js).
+
+1. У дашборді Vercel увімкни **Web Analytics** для проєкту.
+2. У вікні інструкцій обери framework **HTML** / **Other** — не Next.js (`npm i @vercel/analytics` тут не потрібен).
+3. Задеплой і відкрий сайт — pageviews підуть самі; waitlist шле подію `WaitlistSignup`.
+
 ## Waitlist (обов’язково для продакшену)
 
 На Vercel файлова система **не постійна** — `out/waitlist.json` не спрацює.

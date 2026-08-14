@@ -51,6 +51,9 @@
         }
         setStatus(body.message || "You're on the list. We'll be in touch.", "ok");
         form.reset();
+        if (typeof window.va === "function") {
+          window.va("event", { name: "WaitlistSignup" });
+        }
       } catch (err) {
         setStatus(err.message || "Something went wrong. Try again.", "err");
       } finally {
