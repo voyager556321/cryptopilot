@@ -72,9 +72,12 @@ out/              Runtime state (ledgers, season_cache, snapshots) — gitignore
 The public site is the Next.js app at the **repository root** (`app/`, `package.json`).
 
 1. Import `voyager556321/cryptopilot` in Vercel.
-2. **Root Directory must be empty** (not `deploy/vercel`).
-3. Framework: Next.js.
-4. Production URL: Promote the latest `master` deployment to Production, or open `https://cryptopilot-one.vercel.app` after a Production deploy.
+2. **Root Directory** — empty.
+3. **Build & Development Settings** (критично):
+   - Framework Preset: **Next.js** (не Other)
+   - Output Directory: **вимкни Override** — не `public`
+   - Build Command: `next build` (або дефолт Next.js)
+4. Production: latest Ready deploy → **Promote to Production**.
 
 Env (optional waitlist): `WAITLIST_WEBHOOK_URL`.
 
