@@ -1,4 +1,5 @@
 import Nav from "./nav";
+import DemoPortfolio from "./demo-portfolio";
 import WaitlistForm from "./waitlist-form";
 
 export default function HomePage() {
@@ -26,14 +27,14 @@ export default function HomePage() {
                   <span className="lp-product-day">TODAY</span>
                   <span className="lp-product-tag">Daily decision</span>
                 </div>
-                <p className="lp-product-action">ACTION: HOLD</p>
-                <p className="lp-product-sub">No trade required. Stick to the plan.</p>
-                <p className="lp-product-reasons-label">Reasons</p>
+                <p className="lp-product-action">ACTION: PROFIT LOCK</p>
+                <p className="lp-product-sub">Move $18 to USDT</p>
+                <p className="lp-product-reasons-label">Why</p>
                 <ul className="lp-product-reasons">
-                  <li>BTC neutral · no strong regime shift</li>
-                  <li>USDT still below target cushion</li>
-                  <li>No profit-lock trigger today</li>
-                  <li>Avoid reacting to noise</li>
+                  <li>BTC risk-off</li>
+                  <li>Daily PnL +$54</li>
+                  <li>USDT below target</li>
+                  <li>Lock ~30% of today&apos;s gain</li>
                 </ul>
                 <p className="lp-product-footer">Hold · Profit lock · Defense · Rebalance</p>
               </div>
@@ -48,15 +49,19 @@ export default function HomePage() {
               </p>
               <p className="lp-mantra">Open the app. Know what to do today.</p>
               <div className="lp-hero-cta">
-                <a className="lp-btn" href="#waitlist">
-                  Join Waitlist
+                <a className="lp-btn" href="#demo">
+                  Try Demo Portfolio
                 </a>
-                <span className="lp-cta-hint">Get daily portfolio decisions.</span>
+                <a className="lp-btn lp-btn-ghost" href="#waitlist">
+                  Get Early Access
+                </a>
               </div>
-              <p className="lp-fine">Read-only Binance sync. Advice only — no auto-orders.</p>
+              <p className="lp-fine">See a sample decision first. No email required for the demo.</p>
             </div>
           </div>
         </section>
+
+        <DemoPortfolio />
 
         <section className="lp-section" id="before-after" aria-labelledby="ba-title">
           <div className="lp-wrap">
@@ -316,11 +321,13 @@ export default function HomePage() {
         <section className="lp-section lp-cta" id="waitlist" aria-labelledby="waitlist-title">
           <div className="lp-wrap lp-cta-inner">
             <p className="lp-mantra">Open the app. Know what to do today.</p>
-            <h2 id="waitlist-title">Get daily portfolio decisions.</h2>
-            <p className="lp-lede">Join the waitlist. Be first to receive daily action plans.</p>
-            <WaitlistForm />
+            <h2 id="waitlist-title">Want this for your portfolio?</h2>
+            <p className="lp-lede">
+              Get early access. Demo first — connect later. No auto-orders.
+            </p>
+            <WaitlistForm source="landing_after_demo" />
             <p className="lp-cta-hint lp-center">
-              Get daily portfolio decisions. Advice only — no auto-orders.
+              <a href="#demo">Try Demo Portfolio</a> if you haven&apos;t yet.
             </p>
           </div>
         </section>
@@ -330,9 +337,9 @@ export default function HomePage() {
         <div className="lp-wrap lp-footer-inner">
           <span className="lp-logo">CryptoPilot</span>
           <nav aria-label="Footer">
-            <a href="#outcomes">Outcomes</a>
+            <a href="#demo">Demo</a>
             <a href="#proof">Proof</a>
-            <a href="#waitlist">Waitlist</a>
+            <a href="#waitlist">Early Access</a>
             <a href="mailto:hello@cryptopilot.app">Contact</a>
           </nav>
           <p className="lp-fine">

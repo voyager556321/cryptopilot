@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import { track } from "@vercel/analytics";
 
-export default function WaitlistForm() {
+export default function WaitlistForm({ source = "landing" }: { source?: string }) {
   const [status, setStatus] = useState("");
   const [kind, setKind] = useState("");
   const [busy, setBusy] = useState(false);
@@ -24,7 +24,7 @@ export default function WaitlistForm() {
       const res = await fetch("/api/waitlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, source: "landing" }),
+        body: JSON.stringify({ email, source }),
       });
       const body = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -33,7 +33,7 @@ export default function WaitlistForm() {
       setKind("ok");
       setStatus(body.message || "You're on the list. We'll be in touch.");
       form.reset();
-      track("WaitlistSignup");
+      track("WaitlistSignup", { source });
     } catch (err) {
       setKind("err");
       setStatus(err instanceof Error ? err.message : "Something went wrong. Try again.");
@@ -58,7 +58,7 @@ export default function WaitlistForm() {
           aria-describedby="waitlist-status"
         />
         <button className="lp-btn lp-btn-lg" type="submit" disabled={busy}>
-          Join Waitlist
+          Get Early Access
         </button>
       </form>
       <p

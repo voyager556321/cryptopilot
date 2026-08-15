@@ -12,13 +12,13 @@ export default function Nav() {
           CryptoPilot
         </a>
         <nav className="lp-nav-links" aria-label="Primary">
-          <a href="#before-after">Before / After</a>
+          <a href="#demo">Demo</a>
           <a href="#how">How it works</a>
           <a href="#proof">Proof</a>
-          <a href="#waitlist">Waitlist</a>
+          <a href="#waitlist">Early Access</a>
         </nav>
-        <a className="lp-btn lp-btn-sm" href="#waitlist">
-          Join Waitlist
+        <a className="lp-btn lp-btn-sm" href="#demo">
+          Try Demo
         </a>
         <button
           type="button"
@@ -36,23 +36,17 @@ export default function Nav() {
         className={"lp-mobile-nav" + (open ? " is-open" : "")}
         id="mobile-nav"
       >
-        <a href="#before-after" onClick={() => setOpen(false)}>
-          Before / After
+        <a href="#demo" onClick={() => setOpen(false)}>
+          Demo
         </a>
         <a href="#how" onClick={() => setOpen(false)}>
           How it works
         </a>
-        <a href="#outcomes" onClick={() => setOpen(false)}>
-          Outcomes
-        </a>
         <a href="#proof" onClick={() => setOpen(false)}>
           Proof
         </a>
-        <a href="#story" onClick={() => setOpen(false)}>
-          Story
-        </a>
         <a href="#waitlist" onClick={() => setOpen(false)}>
-          Waitlist
+          Early Access
         </a>
         <a href="mailto:hello@cryptopilot.app">Contact</a>
       </nav>
