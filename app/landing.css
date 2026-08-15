@@ -1021,7 +1021,96 @@ body.lp {
   border-radius: 4px;
 }
 
-.lp-proof-tight { margin-top: 0.5rem; }
+.lp-proof-tight { margin-top: 0.5rem; margin-bottom: 1.75rem; }
+
+.lp-history {
+  margin: 2rem 0 1.5rem;
+  padding: 1.35rem 1.25rem 1.15rem;
+  background: var(--lp-card);
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius);
+}
+
+.lp-history-title {
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.45rem;
+  text-align: center;
+}
+
+.lp-history-lede {
+  color: var(--lp-muted);
+  font-size: 0.92rem;
+  text-align: center;
+  max-width: 40rem;
+  margin: 0 auto 1.1rem;
+  line-height: 1.5;
+}
+
+.lp-history-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.lp-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  min-width: 36rem;
+}
+
+.lp-history-table th {
+  text-align: left;
+  color: var(--lp-muted);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.45rem 0.55rem;
+  border-bottom: 1px solid var(--lp-border);
+}
+
+.lp-history-table td {
+  padding: 0.65rem 0.55rem;
+  border-bottom: 1px solid var(--lp-border);
+  color: var(--lp-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.lp-history-table tr:last-child td { border-bottom: 0; }
+
+.lp-history-table .pos { color: var(--lp-green); }
+.lp-history-table .neg { color: var(--lp-red); }
+.lp-history-table .muted { color: var(--lp-muted); }
+
+.lp-pill {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.22rem 0.45rem;
+  border-radius: 6px;
+}
+.lp-pill-lock {
+  background: rgba(52, 211, 153, 0.15);
+  color: var(--lp-green);
+}
+.lp-pill-defense {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+}
+.lp-pill-hold {
+  background: var(--lp-accent-dim);
+  color: var(--lp-accent);
+}
+
+.lp-history .lp-fine {
+  margin-top: 0.85rem;
+}
+.lp-history code {
+  font-size: 0.8em;
+  color: var(--lp-accent);
+}
 
 /* ——— Demo portfolio ——— */
 .lp-demo {

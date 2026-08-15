@@ -247,16 +247,35 @@ export default function HomePage() {
             </h2>
             <p className="lp-lede-sm lp-center">
               You shouldn&apos;t — until the process is clear and the evidence is real.
-              Here is what exists today. No invented performance.
+              Here is what the system actually did. No invented performance.
             </p>
+
+            <div className="lp-proof lp-proof-tight">
+              <article className="lp-proof-item">
+                <p className="lp-proof-num">$59</p>
+                <p className="lp-proof-label">Moved to safety (USDT) on the founder book</p>
+              </article>
+              <article className="lp-proof-item">
+                <p className="lp-proof-num">4</p>
+                <p className="lp-proof-label">Profit-lock actions logged (Aug 4–9)</p>
+              </article>
+              <article className="lp-proof-item">
+                <p className="lp-proof-num">13</p>
+                <p className="lp-proof-label">Recommendations generated in the replay</p>
+              </article>
+              <article className="lp-proof-item">
+                <p className="lp-proof-num">3 + 1</p>
+                <p className="lp-proof-label">Simulated PROFIT LOCK + DEFENSE days</p>
+              </article>
+            </div>
 
             <div className="lp-trust-grid">
               <article className="lp-trust-card">
-                <h3>Not smarter than you</h3>
+                <h3>Disciplined, not predictive</h3>
                 <p>
-                  The engine does not predict the top. It applies fixed rules: green day →
-                  consider profit lock; deep red → defense; otherwise hold. You stay in control —
-                  advice only, no auto-orders.
+                  Consistency over prediction. Fixed rules: green day → consider profit lock;
+                  deep red → defense; otherwise hold. Not a forecast of the top — a process when
+                  emotion would otherwise decide.
                 </p>
               </article>
               <article className="lp-trust-card">
@@ -264,49 +283,107 @@ export default function HomePage() {
                 <p>
                   Other products named &quot;CryptoPilot&quot; sell signals or automation. This one
                   answers one question: what should I do with <em>my</em> portfolio{" "}
-                  <em>today</em>? If you want a bot that trades for you — this isn&apos;t it.
+                  <em>today</em>? Advice only. No auto-orders.
                 </p>
               </article>
               <article className="lp-trust-card">
                 <h3>Founder&apos;s live book</h3>
                 <p>
-                  Running on a real spot portfolio first. Take-profit days logged into USDT:
-                  Aug 4 (~$27), Aug 7 (~$20), Aug 8 (~$7), Aug 9 (~$5) — about{" "}
-                  <strong>$59 locked</strong> total. Small. Real. Not marketed alpha.
+                  Take-profit days into USDT: Aug 4 (~$27), Aug 7 (~$20), Aug 8 (~$7), Aug 9 (~$5) —
+                  about <strong>$59 moved to safety</strong>. Small. Real. Not marketed alpha.
                 </p>
               </article>
               <article className="lp-trust-card">
-                <h3>Early history replay</h3>
+                <h3>Too early to claim an edge</h3>
                 <p>
-                  Same production <code>build_action_plan()</code> on 13 days of sleeve history
-                  (Aug 2–14). Simulated locks ~$44. Drawdown almost tied with buy&amp;hold —
-                  <strong> too short to claim an edge</strong>. We publish that on purpose.
-                  Longer tape → clearer behavior proof.
+                  Same production <code>build_action_plan()</code> on 13 days (Aug 2–14). Simulated
+                  locks ~$44. Drawdown almost tied with buy&amp;hold. We say that out loud. Longer
+                  tape → clearer behavior proof.
                 </p>
               </article>
             </div>
 
-            <div className="lp-proof lp-proof-tight">
-              <article className="lp-proof-item">
-                <p className="lp-proof-num">~$59</p>
-                <p className="lp-proof-label">USDT locked on 4 take-profit days</p>
-              </article>
-              <article className="lp-proof-item">
-                <p className="lp-proof-num">2,900+</p>
-                <p className="lp-proof-label">Portfolio snapshots in the founder tape</p>
-              </article>
-              <article className="lp-proof-item">
-                <p className="lp-proof-num">13 days</p>
-                <p className="lp-proof-label">Backtest window — early, not conclusive</p>
-              </article>
-              <article className="lp-proof-item">
-                <p className="lp-proof-num">Rules</p>
-                <p className="lp-proof-label">Deterministic · no LLM as the brain</p>
-              </article>
+            <div className="lp-history" id="history">
+              <h3 className="lp-history-title">Recommendation history (13-day replay)</h3>
+              <p className="lp-history-lede">
+                What the engine would have advised on the founder sleeve tape. Forward = simulated
+                book return after the action. Too early to claim an edge — still useful to see the
+                behavior.
+              </p>
+              <div className="lp-history-table-wrap">
+                <table className="lp-history-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Action</th>
+                      <th>Day PnL</th>
+                      <th>Regime</th>
+                      <th>Lock</th>
+                      <th>3d later</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Aug 4</td>
+                      <td>
+                        <span className="lp-pill lp-pill-lock">PROFIT LOCK</span>
+                      </td>
+                      <td>+$42.80</td>
+                      <td>bounce_watch</td>
+                      <td>$15</td>
+                      <td className="pos">+1.2%</td>
+                    </tr>
+                    <tr>
+                      <td>Aug 5</td>
+                      <td>
+                        <span className="lp-pill lp-pill-lock">PROFIT LOCK</span>
+                      </td>
+                      <td>+$40.64</td>
+                      <td>bounce_watch</td>
+                      <td>$14</td>
+                      <td className="pos">+0.4%</td>
+                    </tr>
+                    <tr>
+                      <td>Aug 7</td>
+                      <td>
+                        <span className="lp-pill lp-pill-lock">PROFIT LOCK</span>
+                      </td>
+                      <td>+$43.47</td>
+                      <td>bounce_watch</td>
+                      <td>$15</td>
+                      <td className="neg">−1.4%</td>
+                    </tr>
+                    <tr>
+                      <td>Aug 10</td>
+                      <td>
+                        <span className="lp-pill lp-pill-defense">DEFENSE</span>
+                      </td>
+                      <td>−$67.34</td>
+                      <td>bounce_watch</td>
+                      <td>—</td>
+                      <td className="neg">−0.7%</td>
+                    </tr>
+                    <tr>
+                      <td>Aug 14</td>
+                      <td>
+                        <span className="lp-pill lp-pill-hold">CAUTION</span>
+                      </td>
+                      <td>−$36.98</td>
+                      <td>range</td>
+                      <td>—</td>
+                      <td className="muted">n/a</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p className="lp-fine lp-center">
+                8 HOLD days omitted for brevity. Full replay:{" "}
+                <code>python -m src.tools.backtest_action_plan</code>
+              </p>
             </div>
 
             <p className="lp-fine lp-center">
-              Thesis: better behavior (discipline, smaller emotional mistakes) — not
+              Thesis: better behavior (discipline, fewer emotional exits) — not
               &quot;guaranteed +X% vs BTC.&quot;{" "}
               <a href="#story">How it started →</a>
             </p>
