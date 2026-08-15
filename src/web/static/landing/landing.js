@@ -1,4 +1,4 @@
-/** CryptoPilot marketing landing — isolated from dashboard JS */
+/** LockIn marketing landing — isolated from dashboard JS */
 
 (function () {
   const toggle = document.getElementById("nav-toggle");

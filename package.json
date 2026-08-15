@@ -1,5 +1,5 @@
 {
-  "name": "cryptopilot-landing",
+  "name": "lockin-landing",
   "private": true,
   "scripts": {
     "dev": "next dev",

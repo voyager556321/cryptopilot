@@ -76,7 +76,7 @@ export default function HomePage() {
             </p>
             <div className="lp-ba">
               <article className="lp-ba-card lp-ba-before">
-                <h3>Without CryptoPilot</h3>
+                <h3>Without LockIn</h3>
                 <p className="lp-ba-stat">Portfolio +$54 today</p>
                 <ul className="lp-ba-chaos">
                   <li>Do nothing</li>
@@ -93,7 +93,7 @@ export default function HomePage() {
                 →
               </div>
               <article className="lp-ba-card lp-ba-after">
-                <h3>With CryptoPilot</h3>
+                <h3>With LockIn</h3>
                 <p className="lp-ba-stat lp-ba-stat-muted">Portfolio +$54 today</p>
                 <div className="lp-ba-rec">
                   <span className="lp-product-day">TODAY</span>
@@ -283,7 +283,7 @@ export default function HomePage() {
               <article className="lp-trust-card">
                 <h3>Portfolio discipline engine</h3>
                 <p>
-                  Not another &quot;CryptoPilot&quot; signals bot. One job: what should I do with{" "}
+                  Not a signals bot. Not auto-trading. One job: what should I do with{" "}
                   <em>my</em> portfolio <em>today</em>? Advice only. You stay in control.
                 </p>
               </article>
@@ -405,9 +405,8 @@ export default function HomePage() {
                 <strong>“What should I do with my portfolio today?”</strong>
               </p>
               <p>
-                CryptoPilot is that answer — a daily decision with reasons — not a prediction
-                engine, and not a bot that trades for you. If another &quot;CryptoPilot&quot; is
-                selling signals or auto-trades, that is a different product.
+                LockIn is that answer — a daily decision with reasons — not a prediction
+                engine, and not a bot that trades for you.
               </p>
               <p className="lp-mantra">Open the app. Know what to do today.</p>
             </div>
@@ -462,12 +461,12 @@ export default function HomePage() {
 
       <footer className="lp-footer">
         <div className="lp-wrap lp-footer-inner">
-          <span className="lp-logo">CryptoPilot</span>
+          <span className="lp-logo">LockIn</span>
           <nav aria-label="Footer">
             <a href="#demo">Demo</a>
             <a href="#trust">Why trust</a>
             <a href="#waitlist">Early Access</a>
-            <a href="mailto:hello@cryptopilot.app">Contact</a>
+            <a href="mailto:hello@lockin.app">Contact</a>
           </nav>
           <p className="lp-fine">
             Open the app. Know what to do today. · Advice only. Not financial advice.

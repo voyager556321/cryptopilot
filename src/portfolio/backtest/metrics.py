@@ -117,7 +117,7 @@ def compare_strategies(rows: Sequence[StrategyMetrics]) -> Dict[str, Any]:
         "best_total_return": max(rows, key=lambda r: r.total_return).name if rows else None,
         "best_max_drawdown": max(rows, key=lambda r: r.max_drawdown).name if rows else None,  # least negative
         "note": (
-            "CryptoPilot thesis is risk-adjusted behavior (drawdown / discipline), "
+            "LockIn thesis is risk-adjusted behavior (drawdown / discipline), "
             "not maximum absolute return."
         ),
     }

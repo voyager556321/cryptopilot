@@ -86,7 +86,7 @@ def run_action_plan_backtest(
     Run the production action plan day-by-day.
 
     Strategies compared on the **same** BTC return path:
-      - cryptopilot: follow suggested_lock_usdt on profit_lock/defense
+      - lockin: follow suggested_lock_usdt on profit_lock/defense
       - buy_hold: initial sleeves, no locks
       - usdt_heavy: start with ``usdt_heavy_pct`` cash, no locks
     """
@@ -207,7 +207,7 @@ def run_action_plan_backtest(
         eq_bh.append({"date": day, "equity": round(sleeves_from_state(bh_be, bh_al, bh_us)["total_usdt"], 2)})
         eq_uh.append({"date": day, "equity": round(sleeves_from_state(uh_be, uh_al, uh_us)["total_usdt"], 2)})
 
-    # Forward returns on CryptoPilot equity path
+    # Forward returns on LockIn equity path
     eq_map = {r["date"]: float(r["equity"]) for r in eq_cp}
     journal = attach_forward_returns(journal, eq_map, dates)
     fwd_summary = summarize_action_forwards(journal)
@@ -218,7 +218,7 @@ def run_action_plan_backtest(
     bh_end = bh_curve[-1] if bh_curve else None
 
     m_cp = compute_metrics(
-        "cryptopilot",
+        "lockin",
         cp_curve,
         profit_locks=locks,
         locked_usdt_total=locked_total,
@@ -232,7 +232,7 @@ def run_action_plan_backtest(
         journal=journal,
         action_forward_summary=fwd_summary,
         equity={
-            "cryptopilot": eq_cp,
+            "lockin": eq_cp,
             "buy_hold": eq_bh,
             "usdt_heavy": eq_uh,
         },

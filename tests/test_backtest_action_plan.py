@@ -64,9 +64,9 @@ def test_backtest_runs_same_engine_modes():
     result = run_action_plan_backtest(snaps, btc_bars=bars, execute_locks=True)
     assert result.meta["days"] == 25
     assert len(result.journal) == 25
-    assert set(result.equity.keys()) == {"cryptopilot", "buy_hold", "usdt_heavy"}
+    assert set(result.equity.keys()) == {"lockin", "buy_hold", "usdt_heavy"}
     names = {s["name"] for s in result.metrics["strategies"]}
-    assert names == {"cryptopilot", "buy_hold", "usdt_heavy"}
+    assert names == {"lockin", "buy_hold", "usdt_heavy"}
     # Every journal row has required fields
     row = result.journal[10]
     for key in (

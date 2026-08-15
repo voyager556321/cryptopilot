@@ -9,7 +9,7 @@ export default function Nav() {
     <header className="lp-nav" id="top">
       <div className="lp-nav-inner">
         <a className="lp-logo" href="/">
-          CryptoPilot
+          LockIn
         </a>
         <nav className="lp-nav-links" aria-label="Primary">
           <a href="#demo">Demo</a>
@@ -48,7 +48,7 @@ export default function Nav() {
         <a href="#waitlist" onClick={() => setOpen(false)}>
           Early Access
         </a>
-        <a href="mailto:hello@cryptopilot.app">Contact</a>
+        <a href="mailto:hello@lockin.app">Contact</a>
       </nav>
     </header>
   );

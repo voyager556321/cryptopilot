@@ -108,7 +108,7 @@ python -m src.tools.backtest_action_plan
 # writes out/backtest/{summary,journal,equity}.json
 ```
 
-Compares **CryptoPilot** (simulated profit-lock execution) vs **Buy & Hold** vs **USDT-heavy (50%)** on:
+Compares **LockIn** (simulated profit-lock execution) vs **Buy & Hold** vs **USDT-heavy (50%)** on:
 
 - total return / CAGR
 - max drawdown

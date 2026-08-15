@@ -9,7 +9,7 @@ type Entry = {
 };
 
 function textFor(entry: Entry): string {
-  return `CryptoPilot waitlist: ${entry.email}\n${entry.source} · ${entry.created_at}`;
+  return `LockIn waitlist: ${entry.email}\n${entry.source} · ${entry.created_at}`;
 }
 
 async function postJson(url: string, body: unknown, headers?: Record<string, string>) {
@@ -35,7 +35,7 @@ async function notify(entry: Entry): Promise<number> {
       await postJson(
         webhook,
         discord
-          ? { username: "CryptoPilot", content: textFor(entry) }
+          ? { username: "LockIn", content: textFor(entry) }
           : { text: textFor(entry), ...entry }
       );
       sent += 1;
@@ -65,7 +65,7 @@ async function notify(entry: Entry): Promise<number> {
       await postJson(
         "https://api.resend.com/emails",
         {
-          from: process.env.WAITLIST_FROM_EMAIL || "CryptoPilot <onboarding@resend.dev>",
+          from: process.env.WAITLIST_FROM_EMAIL || "LockIn <onboarding@resend.dev>",
           to: [notifyEmail],
           subject: `Waitlist: ${entry.email}`,
           text: textFor(entry),
