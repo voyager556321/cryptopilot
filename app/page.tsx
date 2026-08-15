@@ -41,22 +41,25 @@ export default function HomePage() {
             </div>
 
             <div className="lp-hero-copy">
-              <p className="lp-eyebrow">One question. One answer.</p>
+              <p className="lp-eyebrow">Not a trading bot · daily decisions</p>
               <h1 id="hero-title">Know what to do with your crypto portfolio today.</h1>
               <p className="lp-lede">
-                Not another chart dashboard. A daily decision — hold, lock profit, defend, or
-                rebalance — with reasons you can follow.
+                Advice only — hold, lock profit, defend, or rebalance — with reasons you can
+                check. Not signals. Not auto-trading. A process for exits when emotion takes over.
               </p>
               <p className="lp-mantra">Open the app. Know what to do today.</p>
               <div className="lp-hero-cta">
                 <a className="lp-btn" href="#demo">
                   Try Demo Portfolio
                 </a>
-                <a className="lp-btn lp-btn-ghost" href="#waitlist">
-                  Get Early Access
+                <a className="lp-btn lp-btn-ghost" href="#trust">
+                  Why trust this?
                 </a>
               </div>
-              <p className="lp-fine">See a sample decision first. No email required for the demo.</p>
+              <p className="lp-fine">
+                Demo first (no email).{" "}
+                <a href="#trust">Real locks from the founder&apos;s book — no fake returns.</a>
+              </p>
             </div>
           </div>
         </section>
@@ -236,34 +239,76 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="lp-section" id="proof" aria-labelledby="proof-title">
+        <section className="lp-section" id="trust" aria-labelledby="trust-title">
           <div className="lp-wrap">
-            <h2 id="proof-title" className="lp-center">
-              Built in production. Not a pitch deck.
+            <p className="lp-eyebrow lp-center">Credibility · not vibes</p>
+            <h2 id="trust-title" className="lp-center">
+              Why should you trust the recommendation?
             </h2>
             <p className="lp-lede-sm lp-center">
-              Real numbers from the founder&apos;s live portfolio tooling — not marketed returns.
+              You shouldn&apos;t — until the process is clear and the evidence is real.
+              Here is what exists today. No invented performance.
             </p>
-            <div className="lp-proof">
-              <article className="lp-proof-item">
-                <p className="lp-proof-num">~$59</p>
-                <p className="lp-proof-label">USDT profit locked into reserves</p>
+
+            <div className="lp-trust-grid">
+              <article className="lp-trust-card">
+                <h3>Not smarter than you</h3>
+                <p>
+                  The engine does not predict the top. It applies fixed rules: green day →
+                  consider profit lock; deep red → defense; otherwise hold. You stay in control —
+                  advice only, no auto-orders.
+                </p>
               </article>
-              <article className="lp-proof-item">
-                <p className="lp-proof-num">2,700+</p>
-                <p className="lp-proof-label">Portfolio snapshots analyzed</p>
+              <article className="lp-trust-card">
+                <h3>Not a trading bot</h3>
+                <p>
+                  Other products named &quot;CryptoPilot&quot; sell signals or automation. This one
+                  answers one question: what should I do with <em>my</em> portfolio{" "}
+                  <em>today</em>? If you want a bot that trades for you — this isn&apos;t it.
+                </p>
               </article>
-              <article className="lp-proof-item">
-                <p className="lp-proof-num">Read-only</p>
-                <p className="lp-proof-label">Binance sync — no trade keys required</p>
+              <article className="lp-trust-card">
+                <h3>Founder&apos;s live book</h3>
+                <p>
+                  Running on a real spot portfolio first. Take-profit days logged into USDT:
+                  Aug 4 (~$27), Aug 7 (~$20), Aug 8 (~$7), Aug 9 (~$5) — about{" "}
+                  <strong>$59 locked</strong> total. Small. Real. Not marketed alpha.
+                </p>
               </article>
-              <article className="lp-proof-item">
-                <p className="lp-proof-num">Advice only</p>
-                <p className="lp-proof-label">No auto-orders. Ever.</p>
+              <article className="lp-trust-card">
+                <h3>Early history replay</h3>
+                <p>
+                  Same production <code>build_action_plan()</code> on 13 days of sleeve history
+                  (Aug 2–14). Simulated locks ~$44. Drawdown almost tied with buy&amp;hold —
+                  <strong> too short to claim an edge</strong>. We publish that on purpose.
+                  Longer tape → clearer behavior proof.
+                </p>
               </article>
             </div>
+
+            <div className="lp-proof lp-proof-tight">
+              <article className="lp-proof-item">
+                <p className="lp-proof-num">~$59</p>
+                <p className="lp-proof-label">USDT locked on 4 take-profit days</p>
+              </article>
+              <article className="lp-proof-item">
+                <p className="lp-proof-num">2,900+</p>
+                <p className="lp-proof-label">Portfolio snapshots in the founder tape</p>
+              </article>
+              <article className="lp-proof-item">
+                <p className="lp-proof-num">13 days</p>
+                <p className="lp-proof-label">Backtest window — early, not conclusive</p>
+              </article>
+              <article className="lp-proof-item">
+                <p className="lp-proof-num">Rules</p>
+                <p className="lp-proof-label">Deterministic · no LLM as the brain</p>
+              </article>
+            </div>
+
             <p className="lp-fine lp-center">
-              We don&apos;t claim market-beating returns. We claim a clearer daily process.
+              Thesis: better behavior (discipline, smaller emotional mistakes) — not
+              &quot;guaranteed +X% vs BTC.&quot;{" "}
+              <a href="#story">How it started →</a>
             </p>
           </div>
         </section>
@@ -283,8 +328,9 @@ export default function HomePage() {
                 <strong>“What should I do with my portfolio today?”</strong>
               </p>
               <p>
-                CryptoPilot is that answer — a daily decision with reasons — not a prediction engine,
-                and not a bot that trades for you.
+                CryptoPilot is that answer — a daily decision with reasons — not a prediction
+                engine, and not a bot that trades for you. If another &quot;CryptoPilot&quot; is
+                selling signals or auto-trades, that is a different product.
               </p>
               <p className="lp-mantra">Open the app. Know what to do today.</p>
             </div>
@@ -295,7 +341,7 @@ export default function HomePage() {
           <div className="lp-wrap">
             <h2 id="roadmap-title">Honest about what&apos;s ready</h2>
             <p className="lp-lede-sm lp-center">
-              The daily decision loop works today. Deeper validation is next.
+              Daily decisions work on the founder book. Public proof is still being earned.
             </p>
             <div className="lp-roadmap">
               <article className="lp-card lp-card-done">
@@ -303,15 +349,15 @@ export default function HomePage() {
                 <ul>
                   <li>Daily action + reasons</li>
                   <li>Profit-lock &amp; risk cushion</li>
-                  <li>Read-only Binance sync</li>
+                  <li>Demo + early-access list</li>
                 </ul>
               </article>
               <article className="lp-card">
-                <h3>Next</h3>
+                <h3>Next (credibility)</h3>
                 <ul>
-                  <li>Historical validation</li>
-                  <li>Clearer strategy reports</li>
-                  <li>Broader portfolio support</li>
+                  <li>Longer recommendation journal</li>
+                  <li>Clearer backtest vs buy&amp;hold / USDT-heavy</li>
+                  <li>Read-only Binance for early users</li>
                 </ul>
               </article>
             </div>
@@ -323,11 +369,15 @@ export default function HomePage() {
             <p className="lp-mantra">Open the app. Know what to do today.</p>
             <h2 id="waitlist-title">Want this for your portfolio?</h2>
             <p className="lp-lede">
-              Get early access. Demo first — connect later. No auto-orders.
+              Early access is a short list — first ~50 people. You get an email when your spot
+              opens (days/weeks, not &quot;someday&quot; vapor). No auto-orders. No Binance keys
+              required to join.
             </p>
             <WaitlistForm source="landing_after_demo" />
             <p className="lp-cta-hint lp-center">
-              <a href="#demo">Try Demo Portfolio</a> if you haven&apos;t yet.
+              After signup: confirmation in Telegram to the founder + you stay on the list until
+              invite.{" "}
+              <a href="#demo">Try Demo</a> · <a href="#trust">Why trust this?</a>
             </p>
           </div>
         </section>
@@ -338,7 +388,7 @@ export default function HomePage() {
           <span className="lp-logo">CryptoPilot</span>
           <nav aria-label="Footer">
             <a href="#demo">Demo</a>
-            <a href="#proof">Proof</a>
+            <a href="#trust">Why trust</a>
             <a href="#waitlist">Early Access</a>
             <a href="mailto:hello@cryptopilot.app">Contact</a>
           </nav>

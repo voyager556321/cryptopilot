@@ -6,17 +6,19 @@ import { track } from "@vercel/analytics";
 type DemoScenario = {
   id: string;
   label: string;
+  hint: string;
   portfolioValue: string;
   action: string;
   move: string;
   reasons: string[];
-  footer: string;
+  tone: "lock" | "hold" | "defense";
 };
 
 const SCENARIOS: DemoScenario[] = [
   {
     id: "profit_lock",
     label: "Green day",
+    hint: "Book is up · lock some gains",
     portfolioValue: "$5,000",
     action: "PROFIT LOCK",
     move: "Move $18 to USDT",
@@ -26,11 +28,12 @@ const SCENARIOS: DemoScenario[] = [
       "USDT below target",
       "Lock ~30% of today's gain",
     ],
-    footer: "Demo portfolio · advice only · no auto-orders",
+    tone: "lock",
   },
   {
     id: "hold",
     label: "Quiet day",
+    hint: "No strong signal · do nothing",
     portfolioValue: "$5,000",
     action: "HOLD",
     move: "No trade required. Stick to the plan.",
@@ -40,11 +43,12 @@ const SCENARIOS: DemoScenario[] = [
       "No strong lock trigger",
       "Avoid reacting to noise",
     ],
-    footer: "Demo portfolio · advice only · no auto-orders",
+    tone: "hold",
   },
   {
     id: "defense",
     label: "Red day",
+    hint: "Book is down · protect cushion",
     portfolioValue: "$5,000",
     action: "DEFENSE",
     move: "Trim risk · protect cushion",
@@ -54,7 +58,7 @@ const SCENARIOS: DemoScenario[] = [
       "USDT below target",
       "Cut satellites first · protect BTC/ETH",
     ],
-    footer: "Demo portfolio · advice only · no auto-orders",
+    tone: "defense",
   },
 ];
 
@@ -80,10 +84,12 @@ export default function DemoPortfolio() {
           Try Demo Portfolio
         </h2>
         <p className="lp-lede-sm lp-center">
-          See today&apos;s decision on a sample book — no email, no Binance, no signup.
+          Tap a market day. The action changes. Same rule engine shape as the product —
+          sample book, not live prices.
         </p>
 
         <div className="lp-demo">
+          <p className="lp-demo-prompt">Switch the day → watch ACTION change</p>
           <div className="lp-demo-days" role="tablist" aria-label="Demo market day">
             {SCENARIOS.map((s, i) => (
               <button
@@ -94,21 +100,25 @@ export default function DemoPortfolio() {
                 className={"lp-demo-day" + (i === active ? " is-active" : "")}
                 onClick={() => selectDay(i)}
               >
-                {s.label}
+                <span className="lp-demo-day-label">{s.label}</span>
+                <span className="lp-demo-day-action">{s.action}</span>
               </button>
             ))}
           </div>
 
-          <div className="lp-demo-card" role="tabpanel">
+          <div className="lp-demo-card" role="tabpanel" key={scenario.id}>
             <div className="lp-demo-meta">
-              <span className="lp-demo-meta-label">Portfolio value</span>
+              <div>
+                <span className="lp-demo-meta-label">Portfolio value</span>
+                <p className="lp-demo-meta-hint">{scenario.hint}</p>
+              </div>
               <span className="lp-demo-meta-value">{scenario.portfolioValue}</span>
             </div>
 
-            <div className="lp-product-card lp-demo-product">
+            <div className={"lp-product-card lp-demo-product lp-demo-tone-" + scenario.tone}>
               <div className="lp-product-top">
                 <span className="lp-product-day">TODAY</span>
-                <span className="lp-product-tag">Demo decision</span>
+                <span className="lp-product-tag">Sample scenario</span>
               </div>
               <p className="lp-product-action">ACTION: {scenario.action}</p>
               <p className="lp-product-sub">{scenario.move}</p>
@@ -118,7 +128,9 @@ export default function DemoPortfolio() {
                   <li key={reason}>{reason}</li>
                 ))}
               </ul>
-              <p className="lp-product-footer">{scenario.footer}</p>
+              <p className="lp-product-footer">
+                Illustrative · same decision types as production · not a live feed
+              </p>
             </div>
 
             <div className="lp-demo-cta">
@@ -133,7 +145,9 @@ export default function DemoPortfolio() {
                 Get Early Access
               </a>
               <p className="lp-fine">
-                Open the app. Know what to do today. · Read-only later — no auto-orders.
+                <a href="#trust">Why trust the engine?</a>
+                {" · "}
+                Open the app. Know what to do today.
               </p>
             </div>
           </div>

@@ -13,8 +13,8 @@ export default function Nav() {
         </a>
         <nav className="lp-nav-links" aria-label="Primary">
           <a href="#demo">Demo</a>
-          <a href="#how">How it works</a>
-          <a href="#proof">Proof</a>
+          <a href="#trust">Why trust</a>
+          <a href="#story">Story</a>
           <a href="#waitlist">Early Access</a>
         </nav>
         <a className="lp-btn lp-btn-sm" href="#demo">
@@ -39,11 +39,11 @@ export default function Nav() {
         <a href="#demo" onClick={() => setOpen(false)}>
           Demo
         </a>
-        <a href="#how" onClick={() => setOpen(false)}>
-          How it works
+        <a href="#trust" onClick={() => setOpen(false)}>
+          Why trust
         </a>
-        <a href="#proof" onClick={() => setOpen(false)}>
-          Proof
+        <a href="#story" onClick={() => setOpen(false)}>
+          Story
         </a>
         <a href="#waitlist" onClick={() => setOpen(false)}>
           Early Access

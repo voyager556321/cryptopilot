@@ -941,11 +941,87 @@ body.lp {
   margin-top: 0.85rem;
 }
 
-.lp-cta .lp-cta-hint a {
+.lp-fine a {
   color: var(--lp-accent);
   text-decoration: none;
 }
-.lp-cta .lp-cta-hint a:hover { text-decoration: underline; }
+.lp-fine a:hover { text-decoration: underline; }
+
+.lp-demo-prompt {
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--lp-accent);
+  margin-bottom: 0.75rem;
+}
+
+.lp-demo-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  min-width: 6.5rem;
+}
+.lp-demo-day-label { font-size: 0.8rem; }
+.lp-demo-day-action {
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+  color: var(--lp-muted);
+}
+.lp-demo-day.is-active .lp-demo-day-action { color: var(--lp-green); }
+
+.lp-demo-meta {
+  align-items: center;
+}
+.lp-demo-meta-hint {
+  color: var(--lp-muted);
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+}
+
+.lp-demo-tone-lock { border-left-color: var(--lp-green); }
+.lp-demo-tone-hold { border-left-color: var(--lp-accent); }
+.lp-demo-tone-hold .lp-product-action { color: var(--lp-accent); }
+.lp-demo-tone-defense { border-left-color: #fbbf24; }
+.lp-demo-tone-defense .lp-product-action { color: #fbbf24; }
+
+.lp-trust-grid {
+  display: grid;
+  gap: 1rem;
+  margin: 1.75rem 0 1.5rem;
+}
+@media (min-width: 720px) {
+  .lp-trust-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.lp-trust-card {
+  background: var(--lp-card);
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius);
+  padding: 1.25rem 1.35rem;
+}
+.lp-trust-card h3 {
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+.lp-trust-card p {
+  color: var(--lp-muted);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+.lp-trust-card strong { color: var(--lp-text); font-weight: 600; }
+.lp-trust-card em { color: var(--lp-text); font-style: italic; }
+.lp-trust-card code {
+  font-size: 0.82em;
+  color: var(--lp-accent);
+  background: var(--lp-accent-dim);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+
+.lp-proof-tight { margin-top: 0.5rem; }
 
 /* ——— Demo portfolio ——— */
 .lp-demo {

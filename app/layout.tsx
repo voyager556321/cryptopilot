@@ -4,13 +4,13 @@ import { Analytics } from "@vercel/analytics/next";
 import "./landing.css";
 
 export const metadata: Metadata = {
-  title: "CryptoPilot — Know what to do with your crypto portfolio today",
+  title: "CryptoPilot — Daily portfolio decisions (not a trading bot)",
   description:
-    "Open the app. Know what to do today. Daily hold, profit-lock, defense, and rebalance guidance for your crypto portfolio — advice only, no auto-orders.",
+    "Know what to do with your crypto portfolio today. Hold, profit-lock, defense, rebalance — advice only, no auto-orders. Not an AI trading bot or signal channel.",
   openGraph: {
-    title: "CryptoPilot — Know what to do with your crypto portfolio today",
+    title: "CryptoPilot — Daily portfolio decisions (not a trading bot)",
     description:
-      "Open the app. Know what to do today. One daily decision for your portfolio — hold, lock profit, defend, or rebalance.",
+      "One daily decision with reasons. Advice only — no auto-orders. Built as a personal exit process, not a signals product.",
     type: "website",
   },
 };
