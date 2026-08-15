@@ -840,12 +840,15 @@ body.lp {
   letter-spacing: -0.01em;
 }
 
-.lp-ba-stat {
-  font-size: 1.75rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--lp-green);
-  margin-bottom: 1rem;
+.lp-ba-stat-muted {
+  color: var(--lp-muted);
+  font-size: 1.15rem;
+  font-weight: 650;
+  margin-bottom: 0.85rem;
+}
+
+.lp-ba-after .lp-product-sub {
+  margin-bottom: 0.75rem;
 }
 
 .lp-ba-chaos {

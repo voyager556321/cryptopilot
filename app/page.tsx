@@ -41,11 +41,11 @@ export default function HomePage() {
             </div>
 
             <div className="lp-hero-copy">
-              <p className="lp-eyebrow">Not a trading bot · daily decisions</p>
+              <p className="lp-eyebrow">Portfolio discipline engine · not a trading bot</p>
               <h1 id="hero-title">Know what to do with your crypto portfolio today.</h1>
               <p className="lp-lede">
-                Advice only — hold, lock profit, defend, or rebalance — with reasons you can
-                check. Not signals. Not auto-trading. A process for exits when emotion takes over.
+                Help yourself follow your own rules — hold, lock profit, defend, rebalance —
+                when greed or fear would otherwise decide. Advice only. No signals. No auto-orders.
               </p>
               <p className="lp-mantra">Open the app. Know what to do today.</p>
               <div className="lp-hero-cta">
@@ -58,7 +58,7 @@ export default function HomePage() {
               </div>
               <p className="lp-fine">
                 Demo first (no email).{" "}
-                <a href="#trust">Real locks from the founder&apos;s book — no fake returns.</a>
+                <a href="#before-after">See the +$54 day → lock example.</a>
               </p>
             </div>
           </div>
@@ -69,21 +69,22 @@ export default function HomePage() {
         <section className="lp-section" id="before-after" aria-labelledby="ba-title">
           <div className="lp-wrap">
             <h2 id="ba-title" className="lp-center">
-              Same market. Different process.
+              Same green day. Different outcome.
             </h2>
-            <p className="lp-lede-sm lp-center">Open the app. Know what to do today.</p>
+            <p className="lp-lede-sm lp-center">
+              Portfolio discipline — not a forecast of the top.
+            </p>
             <div className="lp-ba">
               <article className="lp-ba-card lp-ba-before">
-                <h3>Before CryptoPilot</h3>
-                <p className="lp-ba-stat">BTC +8%</p>
+                <h3>Without CryptoPilot</h3>
+                <p className="lp-ba-stat">Portfolio +$54 today</p>
                 <ul className="lp-ba-chaos">
-                  <li>Should I sell?</li>
-                  <li>Should I hold?</li>
-                  <li>Should I buy more?</li>
-                  <li>Should I wait?</li>
+                  <li>Do nothing</li>
+                  <li>Get greedy</li>
+                  <li>Hope it keeps going</li>
                 </ul>
                 <p className="lp-ba-verdict">
-                  Too many signals.
+                  Result: emotion decides.
                   <br />
                   No process.
                 </p>
@@ -92,22 +93,23 @@ export default function HomePage() {
                 →
               </div>
               <article className="lp-ba-card lp-ba-after">
-                <h3>After CryptoPilot</h3>
+                <h3>With CryptoPilot</h3>
+                <p className="lp-ba-stat lp-ba-stat-muted">Portfolio +$54 today</p>
                 <div className="lp-ba-rec">
                   <span className="lp-product-day">TODAY</span>
-                  <p className="lp-product-action lp-product-action-sm">ACTION: HOLD</p>
-                  <p className="lp-product-reasons-label">Reasons</p>
+                  <p className="lp-product-action lp-product-action-sm">ACTION: PROFIT LOCK</p>
+                  <p className="lp-product-sub">Move $18 to USDT</p>
+                  <p className="lp-product-reasons-label">Reason</p>
                   <ul className="lp-product-reasons">
-                    <li>BTC neutral</li>
                     <li>USDT below target</li>
-                    <li>No strong signal</li>
-                    <li>Stick to the plan</li>
+                    <li>Profit lock incomplete</li>
+                    <li>BTC risk-off</li>
                   </ul>
                 </div>
                 <p className="lp-ba-verdict lp-ba-verdict-ok">
-                  One decision.
+                  Result: rules executed.
                   <br />
-                  Clear reasons.
+                  Discipline held.
                 </p>
               </article>
             </div>
@@ -252,20 +254,20 @@ export default function HomePage() {
 
             <div className="lp-proof lp-proof-tight">
               <article className="lp-proof-item">
-                <p className="lp-proof-num">$59</p>
-                <p className="lp-proof-label">Moved to safety (USDT) on the founder book</p>
-              </article>
-              <article className="lp-proof-item">
                 <p className="lp-proof-num">4</p>
-                <p className="lp-proof-label">Profit-lock actions logged (Aug 4–9)</p>
+                <p className="lp-proof-label">Profit-lock actions executed on the founder book</p>
               </article>
               <article className="lp-proof-item">
-                <p className="lp-proof-num">13</p>
-                <p className="lp-proof-label">Recommendations generated in the replay</p>
+                <p className="lp-proof-num">USDT</p>
+                <p className="lp-proof-label">Profits systematically moved into reserves</p>
               </article>
               <article className="lp-proof-item">
                 <p className="lp-proof-num">3 + 1</p>
-                <p className="lp-proof-label">Simulated PROFIT LOCK + DEFENSE days</p>
+                <p className="lp-proof-label">PROFIT LOCK + DEFENSE in the early replay</p>
+              </article>
+              <article className="lp-proof-item">
+                <p className="lp-proof-num">Rules</p>
+                <p className="lp-proof-label">Disciplined, not predictive · no auto-orders</p>
               </article>
             </div>
 
@@ -274,41 +276,39 @@ export default function HomePage() {
                 <h3>Disciplined, not predictive</h3>
                 <p>
                   Consistency over prediction. Fixed rules: green day → consider profit lock;
-                  deep red → defense; otherwise hold. Not a forecast of the top — a process when
-                  emotion would otherwise decide.
+                  deep red → defense; otherwise hold. We help you execute your process — not beat
+                  the market with a crystal ball.
                 </p>
               </article>
               <article className="lp-trust-card">
-                <h3>Not a trading bot</h3>
+                <h3>Portfolio discipline engine</h3>
                 <p>
-                  Other products named &quot;CryptoPilot&quot; sell signals or automation. This one
-                  answers one question: what should I do with <em>my</em> portfolio{" "}
-                  <em>today</em>? Advice only. No auto-orders.
+                  Not another &quot;CryptoPilot&quot; signals bot. One job: what should I do with{" "}
+                  <em>my</em> portfolio <em>today</em>? Advice only. You stay in control.
                 </p>
               </article>
               <article className="lp-trust-card">
                 <h3>Founder&apos;s live book</h3>
                 <p>
-                  Take-profit days into USDT: Aug 4 (~$27), Aug 7 (~$20), Aug 8 (~$7), Aug 9 (~$5) —
-                  about <strong>$59 moved to safety</strong>. Small. Real. Not marketed alpha.
+                  Four take-profit days logged (Aug 4–9): profits moved into USDT on purpose —
+                  including ~$27, ~$20, ~$7, ~$5. The point is the habit, not the dollar headline.
                 </p>
               </article>
               <article className="lp-trust-card">
                 <h3>Too early to claim an edge</h3>
                 <p>
-                  Same production <code>build_action_plan()</code> on 13 days (Aug 2–14). Simulated
-                  locks ~$44. Drawdown almost tied with buy&amp;hold. We say that out loud. Longer
-                  tape → clearer behavior proof.
+                  Same production <code>build_action_plan()</code> on a short sleeve tape (Aug
+                  2–14). Drawdown almost tied with buy&amp;hold. We say that out loud. Longer tape
+                  → clearer behavior proof.
                 </p>
               </article>
             </div>
 
             <div className="lp-history" id="history">
-              <h3 className="lp-history-title">Recommendation history (13-day replay)</h3>
+              <h3 className="lp-history-title">Recommendation history (early replay)</h3>
               <p className="lp-history-lede">
-                What the engine would have advised on the founder sleeve tape. Forward = simulated
-                book return after the action. Too early to claim an edge — still useful to see the
-                behavior.
+                What the engine advised on the founder sleeve tape. Forward = simulated book return
+                after the action. Too early to claim an edge — useful to see the behavior.
               </p>
               <div className="lp-history-table-wrap">
                 <table className="lp-history-table">
