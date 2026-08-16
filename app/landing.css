@@ -664,7 +664,8 @@ body.lp {
 }
 
 .lp-form input[type="email"],
-.lp-form select {
+.lp-form select,
+.lp-form textarea {
   flex: 1;
   min-width: 0;
   width: 100%;
@@ -674,6 +675,13 @@ body.lp {
   background: var(--lp-card);
   color: var(--lp-text);
   font-size: 1rem;
+  font-family: inherit;
+}
+.lp-form textarea {
+  border-radius: 16px;
+  resize: vertical;
+  min-height: 5rem;
+  line-height: 1.45;
 }
 .lp-form select {
   appearance: none;
@@ -692,7 +700,8 @@ body.lp {
   background: var(--lp-card);
 }
 .lp-form input:focus-visible,
-.lp-form select:focus-visible {
+.lp-form select:focus-visible,
+.lp-form textarea:focus-visible {
   outline: 2px solid var(--lp-accent);
   outline-offset: 2px;
 }

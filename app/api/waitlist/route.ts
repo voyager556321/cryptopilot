@@ -16,15 +16,16 @@ type Entry = {
   source: string;
   problem: string;
   problem_label: string;
+  problem_detail?: string;
   created_at: string;
 };
 
 function textFor(entry: Entry): string {
-  return (
-    `LockIn waitlist: ${entry.email}\n` +
-    `Problem: ${entry.problem_label}\n` +
-    `${entry.source} · ${entry.created_at}`
-  );
+  const problemLine =
+    entry.problem === "other" && entry.problem_detail
+      ? `Problem: ${entry.problem_detail}`
+      : `Problem: ${entry.problem_label}`;
+  return `LockIn waitlist: ${entry.email}\n${problemLine}\n${entry.source} · ${entry.created_at}`;
 }
 
 async function postJson(url: string, body: unknown, headers?: Record<string, string>) {
@@ -103,7 +104,8 @@ async function notify(entry: Entry): Promise<number> {
 }
 
 export async function POST(req: Request) {
-  let payload: { email?: string; source?: string; problem?: string } = {};
+  let payload: { email?: string; source?: string; problem?: string; problem_detail?: string } =
+    {};
   try {
     payload = await req.json();
   } catch {
@@ -117,6 +119,9 @@ export async function POST(req: Request) {
   const problem = String(payload.problem || "")
     .trim()
     .toLowerCase();
+  const problemDetail = String(payload.problem_detail || "")
+    .trim()
+    .slice(0, 280);
 
   if (!EMAIL_RE.test(email)) {
     return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
@@ -124,6 +129,12 @@ export async function POST(req: Request) {
   if (!problem || !(problem in PROBLEM_LABELS)) {
     return NextResponse.json(
       { error: "Pick your biggest portfolio problem today." },
+      { status: 400 }
+    );
+  }
+  if (problem === "other" && problemDetail.length < 3) {
+    return NextResponse.json(
+      { error: "Please write your portfolio problem in a few words." },
       { status: 400 }
     );
   }
@@ -138,7 +149,11 @@ export async function POST(req: Request) {
     email,
     source,
     problem,
-    problem_label: PROBLEM_LABELS[problem],
+    problem_label:
+      problem === "other" && problemDetail
+        ? problemDetail
+        : PROBLEM_LABELS[problem],
+    problem_detail: problem === "other" ? problemDetail : undefined,
     created_at: new Date().toISOString(),
   };
 
