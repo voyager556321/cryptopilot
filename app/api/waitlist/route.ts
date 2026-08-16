@@ -2,14 +2,29 @@ import { NextResponse } from "next/server";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const PROBLEM_LABELS: Record<string, string> = {
+  exits: "Don't know when to take profits / exits",
+  emotion: "Emotional decisions (fear & greed)",
+  allocation: "Allocation / rebalancing discipline",
+  risk: "Risk / USDT cushion / drawdowns",
+  noise: "Too many signals, no daily process",
+  other: "Something else",
+};
+
 type Entry = {
   email: string;
   source: string;
+  problem: string;
+  problem_label: string;
   created_at: string;
 };
 
 function textFor(entry: Entry): string {
-  return `LockIn waitlist: ${entry.email}\n${entry.source} · ${entry.created_at}`;
+  return (
+    `LockIn waitlist: ${entry.email}\n` +
+    `Problem: ${entry.problem_label}\n` +
+    `${entry.source} · ${entry.created_at}`
+  );
 }
 
 async function postJson(url: string, body: unknown, headers?: Record<string, string>) {
@@ -88,7 +103,7 @@ async function notify(entry: Entry): Promise<number> {
 }
 
 export async function POST(req: Request) {
-  let payload: { email?: string; source?: string } = {};
+  let payload: { email?: string; source?: string; problem?: string } = {};
   try {
     payload = await req.json();
   } catch {
@@ -99,9 +114,18 @@ export async function POST(req: Request) {
     .trim()
     .toLowerCase();
   const source = String(payload.source || "landing").trim() || "landing";
+  const problem = String(payload.problem || "")
+    .trim()
+    .toLowerCase();
 
   if (!EMAIL_RE.test(email)) {
     return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
+  }
+  if (!problem || !(problem in PROBLEM_LABELS)) {
+    return NextResponse.json(
+      { error: "Pick your biggest portfolio problem today." },
+      { status: 400 }
+    );
   }
 
   const configured = Boolean(
@@ -113,6 +137,8 @@ export async function POST(req: Request) {
   const entry: Entry = {
     email,
     source,
+    problem,
+    problem_label: PROBLEM_LABELS[problem],
     created_at: new Date().toISOString(),
   };
 
@@ -127,6 +153,7 @@ export async function POST(req: Request) {
   return NextResponse.json({
     ok: true,
     email,
+    problem,
     message: "You're on the list. We'll be in touch.",
     persisted: sent > 0,
   });
